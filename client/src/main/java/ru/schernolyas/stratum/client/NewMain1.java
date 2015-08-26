@@ -38,7 +38,7 @@ public class NewMain1 {
             writer.flush();
             BufferedReader inFromServer = new BufferedReader(reader);
             LOG.log(Level.INFO, "1. read from server: {0}", new Object[]{inFromServer.readLine()});
-            String str2="{\"id\": 2, \"method\": \"mining.authorize\", \"params\": [\"sergey461\",\"Sc27071977\"]}\n";
+            String str2="{\"id\": 2, \"method\": \"mining.authorize\", \"params\": [\"********\",\"*****\"]}\n";
             writer.write(str2, 0, str2.length());
             writer.flush();
             LOG.log(Level.INFO, "2. read from server: {0}", new Object[]{inFromServer.readLine()});
