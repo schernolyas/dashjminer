@@ -26,6 +26,7 @@ import org.apache.commons.codec.binary.Hex;
 import ru.schernolyas.stratum.client.dto.BlockHeader;
 import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
+import ru.schernolyas.stratum.client.method.SetDifficulty;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.DifficultyUtil;
 import ru.schernolyas.stratum.client.utils.MerkleTreeUtil;
@@ -49,12 +50,6 @@ public class NewMain {
      */
     public static void main(String[] args) throws IOException {
         try {
-            
-            BigDecimal nd = new BigDecimal("0.03125");
-            LOG.log(Level.INFO, "currentTarget : {0}; {1}",
-                    new Object[]{nd.unscaledValue(),Hex.encodeHexString(nd.unscaledValue().toByteArray())});
-            
-                    
             MessageDigest sha256md = MessageDigest.getInstance("SHA-256");
             String responseStr1 = "{\"id\":1,\"result\":[[[\"mining.set_difficulty\",\"deadbeefcafebabe76df0c0000000000\"],[\"mining.notify\",\"deadbeefcafebabe76df0c0000000000\"]],\"100578b3\",4],\"error\":null}";
             String responseStr2 = "{\"id\":null,\"method\":\"mining.set_difficulty\",\"params\":[0.03125]}";
@@ -66,8 +61,11 @@ public class NewMain {
             jsonReader = Json.createReader(new StringReader(responseStr3));
             obj = jsonReader.readObject();
             MiningNotify miningNotify = new MiningNotify(responseStr3, obj);
-//see responseStr2
-            BigInteger currentTarget = DifficultyUtil.calculateTarget(initial.getMiningSetDifficulty());
+            jsonReader = Json.createReader(new StringReader(responseStr2));
+            obj = jsonReader.readObject();
+            SetDifficulty setDifficulty = new SetDifficulty(responseStr2, obj);
+            LOG.log(Level.INFO, "current difficulty : {0}", new Object[]{Hex.encodeHexString(setDifficulty.getDifficulty())});
+            BigInteger currentTarget = DifficultyUtil.calculateTarget(setDifficulty.getDifficulty());
             LOG.log(Level.INFO, "currentTarget : {0}", new Object[]{Hex.encodeHexString(currentTarget.toByteArray())});
 
             ByteArrayOutputStream coinBaseOs = new ByteArrayOutputStream();
@@ -101,7 +99,6 @@ public class NewMain {
                     new Object[]{Hex.encodeHexString(currentTarget.toByteArray()),
                         Hex.encodeHexString(x11Hash), currentTarget.compareTo(x11Value)});
 
-            //clientSocket.close(); 
         } catch (DecoderException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }

@@ -46,9 +46,9 @@ public class Initial {
         for (int i = 0; i < array1.size(); i++) {
             JsonArray ar = array1.getJsonArray(i);
             String name = ar.getJsonString(0).getString();
-            if (name.equalsIgnoreCase("mining.set_difficulty")) {
+            /*if (name.equalsIgnoreCase("mining.set_difficulty")) {
                 this.miningSetDifficulty = Hex.decodeHex(ar.getJsonString(1).getString().toCharArray());
-            } else if (name.equalsIgnoreCase("mining.notify")) {
+            } else */ if (name.equalsIgnoreCase("mining.notify")) {
                 this.miningNotify = Hex.decodeHex(ar.getJsonString(1).getString().toCharArray());
             }
         }
