@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
 /**
@@ -18,8 +19,7 @@ import org.apache.commons.codec.binary.Hex;
 public class ByteUtils {
     private static final Logger LOG = Logger.getLogger(ByteUtils.class.getName());
     
-    public static byte[] littleEndian(byte[] in)  {
-        //LOG.log(Level.INFO, "littleEndian in : {0}", new Object[]{Hex.encodeHexString(in)});
+    public  byte[] littleEndian(byte[] in)  {
         byte[] reversed = new byte[in.length];
         int reverse = in.length-1;
         int forward = 0;
@@ -27,11 +27,20 @@ public class ByteUtils {
             reversed[reverse]=in[forward];
             forward++;
         }
-        //LOG.log(Level.INFO, "littleEndian reversed : {0}", new Object[]{Hex.encodeHexString(reversed)});
         return reversed;
     }
     
-    public static byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
+    public byte[] swapOrder(byte[] in) throws IOException, DecoderException  {
+        String str = Hex.encodeHexString(in);
+        StringBuilder builder = new StringBuilder(str.length());
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            builder.insert(0, c);
+        }
+        return Hex.decodeHex(builder.toString().toCharArray());
+    }
+    /*
+    public  byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
         LOG.log(Level.INFO, "preparePrevHash in : {0}", new Object[]{Hex.encodeHexString(prevHashButes)});
         ByteArrayOutputStream baos = new ByteArrayOutputStream(32);
         for (int position=0;position<32;position+=4) {
@@ -43,5 +52,5 @@ public class ByteUtils {
         baos.flush();
         LOG.log(Level.INFO, "prepared PrevHash : {0}", new Object[]{Hex.encodeHexString(baos.toByteArray())});
         return baos.toByteArray();
-    }
+    } */
 }

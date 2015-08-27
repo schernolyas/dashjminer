@@ -12,10 +12,9 @@ import javax.json.JsonObject;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
-
 /**
  *
- * @author Сергей
+ * @author Sergey Chernolyas
  */
 public class Initial {
 
@@ -38,17 +37,11 @@ public class Initial {
 
     private void processJsonObject() throws DecoderException {
         JsonArray resultArray = this.jsonObject.getJsonArray("result");
-        for (int i = 0; i < resultArray.size(); i++) {
-            LOG.log(Level.INFO, " value type: {0}", new Object[]{resultArray.get(i).getValueType()});
-        }
-
         JsonArray array1 = resultArray.getJsonArray(0);
         for (int i = 0; i < array1.size(); i++) {
             JsonArray ar = array1.getJsonArray(i);
             String name = ar.getJsonString(0).getString();
-            /*if (name.equalsIgnoreCase("mining.set_difficulty")) {
-                this.miningSetDifficulty = Hex.decodeHex(ar.getJsonString(1).getString().toCharArray());
-            } else */ if (name.equalsIgnoreCase("mining.notify")) {
+            if (name.equalsIgnoreCase("mining.notify")) {
                 this.miningNotify = Hex.decodeHex(ar.getJsonString(1).getString().toCharArray());
             }
         }
@@ -57,7 +50,7 @@ public class Initial {
         LOG.log(Level.INFO, "extraNonce1 : {0}", new Object[]{Hex.encodeHexString(extraNonce1)});
         this.extraNonce2Size = resultArray.getInt(2);
         LOG.log(Level.INFO, "extraNonce2Size : {0}", new Object[]{extraNonce2Size});
-        this.extraNonce2=new byte[]{0,0,0,2};
+        this.extraNonce2 = new byte[]{0, 0, 0, 2};
     }
 
     public byte[] getMiningNotify() {
@@ -79,6 +72,5 @@ public class Initial {
     public byte[] getExtraNonce2() {
         return extraNonce2;
     }
-    
 
 }

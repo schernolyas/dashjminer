@@ -74,7 +74,7 @@ public class BlockHeader {
         System.arraycopy(nBit, 0, candidateBlock, (4+32+32+4), 4);
         return candidateBlock;
     }
-    public byte[] toBlock() {
+    public byte[] toBlockHeader() {
         byte[] block = new byte[80];
         System.arraycopy(version, 0, block, 0, 4);
         System.arraycopy(prevHash, 0, block, 4, 32);

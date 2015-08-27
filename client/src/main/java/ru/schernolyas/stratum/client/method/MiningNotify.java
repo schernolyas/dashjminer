@@ -14,7 +14,7 @@ import org.apache.commons.codec.binary.Hex;
 
 /**
  *
- * @author Сергей
+ * @author Sergey Chernolyas
  */
 public class MiningNotify {
 
@@ -63,7 +63,12 @@ public class MiningNotify {
         LOG.log(Level.INFO, "blockVersion : {0}", new Object[]{Hex.encodeHexString(blockVersion)});
         this.encodedNetworkDifficulty = Hex.decodeHex(paramsArray.getJsonString(6).getString().toCharArray());
         LOG.log(Level.INFO, "encodedNetworkDifficulty : {0}", new Object[]{Hex.encodeHexString(encodedNetworkDifficulty)});
-        this.currentTime = Hex.decodeHex(paramsArray.getJsonString(7).getString().toCharArray());
+        System.out.println("!"+paramsArray.getJsonString(7).getString().length());
+        String str = paramsArray.getJsonString(7).getString();
+        if ((str.length() & 0x01) != 0) {
+            str = "0"+str;
+        }
+        this.currentTime = Hex.decodeHex(str.toCharArray());
         LOG.log(Level.INFO, "currentTime : {0}", new Object[]{Hex.encodeHexString(currentTime)});
         
         this.cleanJobs = paramsArray.getBoolean(8);
