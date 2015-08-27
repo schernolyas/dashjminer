@@ -39,6 +39,9 @@ public class X11Util {
         LOG.log(Level.INFO, "SIMD512 : {0}", new Object[]{Hex.encodeHexString(hash)});
         hash = new fr.cryptohash.ECHO512().digest(hash);
         LOG.log(Level.INFO, "ECHO512 : {0}", new Object[]{Hex.encodeHexString(hash)});
-        return hash;
+        byte[] resultHash = new byte[32];
+        System.arraycopy(hash, 0, resultHash, 0, 32);
+        
+        return resultHash;
     }
 }
