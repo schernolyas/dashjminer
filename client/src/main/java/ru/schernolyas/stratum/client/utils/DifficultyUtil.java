@@ -10,17 +10,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import ru.schernolyas.stratum.client.method.SetDifficulty;
 
 /**
- *
- * @author Сергей
+ *@see  http://www.javaworld.com/article/2077257/learn-java/floating-point-arithmetic.html
+ * @author Sergey Chernolyas
  */
 public class DifficultyUtil {
-    private static final Logger LOG = Logger.getLogger(DifficultyUtil.class.getName());   
+    private static final Logger LOG = Logger.getLogger(DifficultyUtil.class.getName());  
+    
      
-    public static BigInteger calculateTarget(byte[] currentDifficultyBytes) throws DecoderException {
-        byte[] b = Hex.decodeHex("00000FFFF0000000000000000000000000000000000000000000000000000000".toCharArray());
-        return new BigInteger(b).divide(new BigInteger(currentDifficultyBytes));
+    public static byte[] calculateTarget(SetDifficulty difficulty) throws DecoderException {
+        int exponent = Math.getExponent(difficulty.getDecimalDifficulty().floatValue());
+        int targetExponent = 208-exponent;
+        BigInteger target = new BigInteger("ffff", 16).multiply(new BigInteger("2").pow(targetExponent));
+        byte[] resultBytes = new byte[32];
+        if (target.toByteArray().length < 32) {
+            byte[] bytes = new byte[32];
+            for (int i = 0; i < bytes.length; i++) {
+                bytes[i] = 0;
+            }
+            int startPos = 32-target.toByteArray().length;
+            System.arraycopy(target.toByteArray(), 0, resultBytes, startPos, target.toByteArray().length);
+        } 
+        LOG.log(Level.INFO, "resultBytes : {0}", new Object[]{Hex.encodeHexString(resultBytes)});
+        return resultBytes;
     }
     
 }
