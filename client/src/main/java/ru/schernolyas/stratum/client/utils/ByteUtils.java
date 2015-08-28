@@ -5,9 +5,7 @@
  */
 package ru.schernolyas.stratum.client.utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -18,7 +16,12 @@ import org.apache.commons.codec.binary.Hex;
  */
 public class ByteUtils {
     private static final Logger LOG = Logger.getLogger(ByteUtils.class.getName());
-    
+    /**
+     * 
+     * @param in
+     * @see http://www.bogotobogo.com/Embedded/Little_endian_big_endian_htons_htonl.php
+     * @return 
+     */
     public  byte[] littleEndian(byte[] in)  {
         byte[] reversed = new byte[in.length];
         int reverse = in.length-1;
@@ -29,14 +32,15 @@ public class ByteUtils {
         }
         return reversed;
     }
+    /**
+     * reverse bytes like hex symbols
+     * @param in array of byte with hex data
+     * @return retult
+     * @throws DecoderException  if hex data is incorrect
+     */
     
-    public byte[] swapOrder(byte[] in) throws IOException, DecoderException  {
-        String str = Hex.encodeHexString(in);
-        StringBuilder builder = new StringBuilder(str.length());
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            builder.insert(0, c);
-        }
+    public byte[] swapOrder(byte[] in) throws DecoderException  {      
+        StringBuilder builder = new StringBuilder(Hex.encodeHexString(in)).reverse();        
         return Hex.decodeHex(builder.toString().toCharArray());
     }
     /*
