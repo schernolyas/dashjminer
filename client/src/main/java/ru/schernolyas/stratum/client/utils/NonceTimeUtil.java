@@ -18,32 +18,34 @@ public class NonceTimeUtil {
 
     private static final Logger LOG = Logger.getLogger(NonceTimeUtil.class.getName());
 
-    private BigInteger nTime;
-    private BigInteger nonce = BigInteger.ONE;
+    private Long nTime;
+    private Long nonce = 0L;
     private boolean nonceOverflow;
 
     public NonceTimeUtil(byte[] nTime) throws DecoderException {
-        this.nTime = new BigInteger(nTime);
-        this.nonce = new BigInteger(Hex.decodeHex(Long.toHexString(5628506).toCharArray()));
+        this.nTime = new BigInteger(nTime).longValue();
+        this.nonce = 5628506L;
     }
 
     public void incNonce() {
-        nonce = nonce.add(BigInteger.ONE);
+        nonce++;
+                /*= nonce.add(BigInteger.ONE);
         if (nonce.bitLength() > 4) {
             nTime = nTime.add(BigInteger.ONE);
-        }
+        } */
     }
 
-    public byte[] getNonce() {
+    public byte[] getNonce() throws DecoderException {
+        System.out.println("nonce "+nonce);
         byte[] nonceBytes = new byte[]{0,0,0,0};
-        byte[] nonceIntBytes = nonce.toByteArray();
+        byte[] nonceIntBytes = Hex.decodeHex(Long.toHexString(nonce).toCharArray());
         System.arraycopy(nonceIntBytes, 0, nonceBytes, 4-nonceIntBytes.length, nonceIntBytes.length);
         return nonceBytes;
     }
 
-    public byte[] getNTime() {
+    public byte[] getNTime() throws DecoderException {
         byte[] nTimeBytes = new byte[]{0, 0, 0, 0};
-        byte[] nTimeIntBytes = nTime.toByteArray();
+        byte[] nTimeIntBytes = Hex.decodeHex(Long.toHexString(nTime).toCharArray());;
         if (nTimeIntBytes.length > 4) {
             int startPos = nTimeBytes.length-4;
             System.arraycopy(nTimeIntBytes, 0, nTimeBytes, startPos, 4);

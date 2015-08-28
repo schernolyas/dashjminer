@@ -108,9 +108,10 @@ public class NewMain {
             LOG.log(Level.INFO, "blockHeader.getnTime() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnTime())});
             blockHeader.setnBit(byteUtils.littleEndian(miningNotify.getEncodedNetworkDifficulty()));
             LOG.log(Level.INFO, "blockHeader.getnBit() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnBit())});
-            blockHeader.setNonce(nonceUtil.getNTime());
+            blockHeader.setNonce(byteUtils.littleEndian(nonceUtil.getNonce()));
             LOG.log(Level.INFO, "blockHeader.getNonce() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getNonce())});
             byte[] blockHeaderBytes = blockHeader.toBlockHeader();
+            LOG.log(Level.INFO, "--------------------------------------------------------");
             LOG.log(Level.INFO, "block header : {0}", new Object[]{Hex.encodeHexString(blockHeaderBytes)});
             byte[] x11Hash = X11Util.calculate(blockHeaderBytes);
             //byte[] revertTarget = currentTarget;

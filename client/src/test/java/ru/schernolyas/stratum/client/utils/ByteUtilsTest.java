@@ -41,6 +41,8 @@ public class ByteUtilsTest {
     }
 
     /**
+     * hex (5628506) -> 55E25A
+     * little-endian hex (5628506) -> 5ae25500
      * Test of littleEndian method, of class ByteUtils.
      */
     @Test
