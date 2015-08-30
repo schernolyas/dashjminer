@@ -8,6 +8,7 @@ package ru.schernolyas.stratum.client;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -112,7 +113,7 @@ public class NewMain {
             LOG.log(Level.INFO, "currentTarget: {0}; littleEndian x11 value : {1}; ",
                     new Object[]{Hex.encodeHexString(currentTarget),
                         Hex.encodeHexString(new ByteUtils().littleEndian(x11Hash))});
-
+            
         } catch (DecoderException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
