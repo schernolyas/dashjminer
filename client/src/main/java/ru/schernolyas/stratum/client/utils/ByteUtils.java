@@ -6,6 +6,7 @@
 package ru.schernolyas.stratum.client.utils;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -42,6 +43,10 @@ public class ByteUtils {
     public byte[] swapOrder(byte[] in) throws DecoderException  {      
         StringBuilder builder = new StringBuilder(Hex.encodeHexString(in)).reverse();        
         return Hex.decodeHex(builder.toString().toCharArray());
+    }
+    
+    public BigInteger toBigInteger(byte[] bytes) {
+        return new BigInteger(1, bytes);
     }
     /*
     public  byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {

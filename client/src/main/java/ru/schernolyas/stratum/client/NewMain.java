@@ -108,11 +108,10 @@ public class NewMain {
             LOG.log(Level.INFO, "--------------------------------------------------------");
             LOG.log(Level.INFO, "block header : {0}", new Object[]{Hex.encodeHexString(blockHeaderBytes)});
             byte[] x11Hash = X11Util.calculate(blockHeaderBytes);
-            //byte[] revertTarget = currentTarget;
-            //BigInteger x11Value = new BigInteger(byteUtils.swapOrder(x11Hash));
-            LOG.log(Level.INFO, "currentTarget: {0}; revert x11 value : {1}; ",
+            
+            LOG.log(Level.INFO, "currentTarget: {0}; littleEndian x11 value : {1}; ",
                     new Object[]{Hex.encodeHexString(currentTarget),
-                        Hex.encodeHexString(new ByteUtils().swapOrder(x11Hash))});
+                        Hex.encodeHexString(new ByteUtils().littleEndian(x11Hash))});
 
         } catch (DecoderException | NoSuchAlgorithmException e) {
             e.printStackTrace();
