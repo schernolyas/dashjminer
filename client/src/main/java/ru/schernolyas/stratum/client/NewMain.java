@@ -118,7 +118,7 @@ public class NewMain {
             //BigInteger x11Value = new BigInteger(byteUtils.swapOrder(x11Hash));
             LOG.log(Level.INFO, "currentTarget: {0}; revert x11 value : {1}; ",
                     new Object[]{Hex.encodeHexString(currentTarget),
-                        Hex.encodeHexString(x11Hash)});
+                        Hex.encodeHexString(new ByteUtils().swapOrder(x11Hash))});
 
         } catch (DecoderException | NoSuchAlgorithmException e) {
             e.printStackTrace();
