@@ -48,9 +48,9 @@ public class ByteUtilsTest {
     @Test
     public void testLittleEndian() throws DecoderException {
         System.out.println("littleEndian");
-        byte[] in = Hex.decodeHex("1234".toCharArray());
+        byte[] in = Hex.decodeHex("01234567".toCharArray());
         ByteUtils instance = new ByteUtils();
-        byte[] expResult = Hex.decodeHex("3412".toCharArray());
+        byte[] expResult = Hex.decodeHex("67452301".toCharArray());
         byte[] result = instance.littleEndian(in);
         System.out.println("result :"+Hex.encodeHexString(result));
         assertArrayEquals(expResult, result);
