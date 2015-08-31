@@ -19,6 +19,7 @@ import javax.json.JsonReader;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import ru.schernolyas.stratum.client.dto.BlockHeader;
+import ru.schernolyas.stratum.client.dto.BlockHeaderTemplateProducer;
 import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
 import ru.schernolyas.stratum.client.method.SetDifficulty;
@@ -51,7 +52,7 @@ public class NewMain {
             long seconds = 1405041879L;
             String requiredTime = Long.toHexString(seconds);
             System.out.println("calendar: " + requiredTime);
-            
+
             String responseStr1 = "{\"id\":1,\"result\":[[[\"mining.set_difficulty\",\"deadbeefcafebabe76df0c0000000000\"],[\"mining.notify\",\"deadbeefcafebabe76df0c0000000000\"]],\"100578b3\",4],\"error\":null}";
             String responseStr2 = "{\"id\":null,\"method\":\"mining.set_difficulty\",\"params\":[3898.66485602]}";
             String responseStr3 = "{\"id\":null,\"method\":\"mining.notify\",\"params\":[\"3ae3\",\"" + Hex.encodeHexString(new ByteUtils().swapOrder(Hex.decodeHex("0000000000108d4b9231f4ec99ab5dc970b6ec740745f44eee0754f67d598ac3".toCharArray()))) + "\","
@@ -90,7 +91,8 @@ public class NewMain {
             LOG.log(Level.INFO, "finalMerkleRoot : {0}", new Object[]{Hex.encodeHexString(finalMerkleRoot)});
             BlockHeader blockHeader = new BlockHeader();
             ByteUtils byteUtils = new ByteUtils();
-            NonceTimeUtil nonceUtil = new NonceTimeUtil(miningNotify.getCurrentTime());
+            long testNonceValue = 5628506L;
+            NonceTimeUtil nonceUtil = new NonceTimeUtil(miningNotify.getCurrentTime(), testNonceValue);
             LOG.log(Level.INFO, "nonceUtil.getNTime() : {0}", new Object[]{Hex.encodeHexString(nonceUtil.getNTime())});
             blockHeader.setVersion(byteUtils.littleEndian(miningNotify.getBlockVersion()));
             LOG.log(Level.INFO, "blockHeader.getVersion() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getVersion())});
@@ -98,17 +100,23 @@ public class NewMain {
             LOG.log(Level.INFO, "blockHeader.getMerkleRoot() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getMerkleRoot())});
             blockHeader.setPrevHash(byteUtils.littleEndian(byteUtils.swapOrder(miningNotify.getPreviousBlockHash())));
             LOG.log(Level.INFO, "blockHeader.getPrevHash() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getPrevHash())});
-            blockHeader.setnTime(byteUtils.littleEndian(nonceUtil.getNTime()));
-            LOG.log(Level.INFO, "blockHeader.getnTime() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnTime())});
+            //blockHeader.setnTime(byteUtils.littleEndian(nonceUtil.getNTime()));
+            //LOG.log(Level.INFO, "blockHeader.getnTime() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnTime())});
             blockHeader.setnBit(byteUtils.littleEndian(miningNotify.getEncodedNetworkDifficulty()));
             LOG.log(Level.INFO, "blockHeader.getnBit() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnBit())});
-            blockHeader.setNonce(byteUtils.littleEndian(nonceUtil.getNonce()));
-            LOG.log(Level.INFO, "blockHeader.getNonce() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getNonce())});
-            byte[] blockHeaderBytes = blockHeader.toBlockHeader();
+            //blockHeader.setNonce(byteUtils.littleEndian(nonceUtil.getNonce()));
+            //LOG.log(Level.INFO, "blockHeader.getNonce() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getNonce())});
+            //byte[] blockHeaderBytes = blockHeader.toBlockHeader();
             LOG.log(Level.INFO, "--------------------------------------------------------");
-            LOG.log(Level.INFO, "block header : {0}", new Object[]{Hex.encodeHexString(blockHeaderBytes)});
+
+            BlockHeaderTemplateProducer blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(blockHeader.toBlockHeader(), nonceUtil);
+            byte[] blockHeaderBytes = blockHeaderTemplateProducer.produceBlockHeader();
+
+            LOG.log(Level.INFO, "--------------------------------------------------------");
+            LOG.log(Level.INFO, "block header template : {0}", new Object[]{Hex.encodeHexString(blockHeader.toBlockHeader())});
+            LOG.log(Level.INFO, "block header  : {0}", new Object[]{Hex.encodeHexString(blockHeaderBytes)});
             byte[] x11Hash = X11Util.calculate(blockHeaderBytes);
-            
+
             LOG.log(Level.INFO, "currentTarget: {0}; littleEndian x11 value : {1}; ",
                     new Object[]{Hex.encodeHexString(currentTarget),
                         Hex.encodeHexString(new ByteUtils().littleEndian(x11Hash))});

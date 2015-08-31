@@ -6,6 +6,8 @@
 package ru.schernolyas.stratum.client.utils;
 
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -17,46 +19,42 @@ import org.apache.commons.codec.binary.Hex;
 public class NonceTimeUtil {
 
     private static final Logger LOG = Logger.getLogger(NonceTimeUtil.class.getName());
+    private static final long MAX_4_BUTES = 0xFFFFFFFF;
 
     private Long nTime;
-    private Long nonce = 0L;
-    private boolean nonceOverflow;
+    private AtomicLong nonce;
 
     public NonceTimeUtil(byte[] nTime) throws DecoderException {
         this.nTime = new BigInteger(nTime).longValue();
-        this.nonce = 5628506L;
+        this.nonce = new AtomicLong(0L);
+    }
+    public NonceTimeUtil(byte[] nTime, long startNonce) throws DecoderException {
+        this.nTime = new BigInteger(nTime).longValue();
+        //5628506L
+        this.nonce = new AtomicLong(startNonce);
     }
 
     public void incNonce() {
-        nonce++;
-                /*= nonce.add(BigInteger.ONE);
-        if (nonce.bitLength() > 4) {
-            nTime = nTime.add(BigInteger.ONE);
-        } */
-    }
-
-    public byte[] getNonce() throws DecoderException {
-        System.out.println("nonce "+nonce);
-        byte[] nonceBytes = new byte[]{0,0,0,0};
-        byte[] nonceIntBytes = Hex.decodeHex(Long.toHexString(nonce).toCharArray());
-        System.arraycopy(nonceIntBytes, 0, nonceBytes, 4-nonceIntBytes.length, nonceIntBytes.length);
-        return nonceBytes;
-    }
-
-    public byte[] getNTime() throws DecoderException {
-        byte[] nTimeBytes = new byte[]{0, 0, 0, 0};
-        byte[] nTimeIntBytes = Hex.decodeHex(Long.toHexString(nTime).toCharArray());;
-        if (nTimeIntBytes.length > 4) {
-            int startPos = nTimeBytes.length-4;
-            System.arraycopy(nTimeIntBytes, 0, nTimeBytes, startPos, 4);
-        } else {
-            System.arraycopy(nTimeIntBytes, 0, nTimeBytes, 4 - nTimeIntBytes.length, nTimeIntBytes.length);
+        long newNonce = nonce.incrementAndGet();
+        if (newNonce>MAX_4_BUTES) {
+            nonce.set(0);
         }
+    }
+
+    public byte[] getNonce() {
+        byte[] resultNonceBytes = new byte[]{0,0,0,0};
+        byte[] nonceIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(nonce.get()).array();
+        System.arraycopy(nonceIntBytes, 4, resultNonceBytes, 0, 4);
+        return resultNonceBytes;
+    }
+    
+    
+    public byte[] getNTime()  {
+        byte[] nTimeBytes = new byte[]{0, 0, 0, 0};
+        byte[] nTimeIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(nTime).array();
+        System.arraycopy(nTimeIntBytes, 4, nTimeBytes, 0, 4);
         return nTimeBytes;
     }
 
-    public boolean isNonceOverflow() {
-        return nonceOverflow;
-    }
 
 }

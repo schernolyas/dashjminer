@@ -10,12 +10,13 @@ package ru.schernolyas.stratum.client.dto;
  * @author Сергей
  */
 public class BlockHeader {
+    private static final byte[] DEFAULT_4_BYTES = new byte[]{0,0,0,0};
     private byte[] version;
     private byte[] prevHash;
     private byte[] merkleRoot;
-    private byte[] nTime;
+    private byte[] nTime = DEFAULT_4_BYTES;
     private byte[] nBit;
-    private byte[] nonce;
+    private byte[] nonce = DEFAULT_4_BYTES;
 
     public byte[] getVersion() {
         return version;
@@ -65,15 +66,6 @@ public class BlockHeader {
         this.nonce = nonce;
     }
     
-    public byte[] toCandidateBlock() {
-        byte[] candidateBlock = new byte[80-4];
-        System.arraycopy(version, 0, candidateBlock, 0, 4);
-        System.arraycopy(prevHash, 0, candidateBlock, 4, 32);
-        System.arraycopy(merkleRoot, 0, candidateBlock, (4+32), 32);
-        System.arraycopy(nTime, 0, candidateBlock, (4+32+32), 4);
-        System.arraycopy(nBit, 0, candidateBlock, (4+32+32+4), 4);
-        return candidateBlock;
-    }
     public byte[] toBlockHeader() {
         byte[] block = new byte[80];
         System.arraycopy(version, 0, block, 0, 4);
