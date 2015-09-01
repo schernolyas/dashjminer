@@ -17,6 +17,7 @@ import org.apache.commons.codec.binary.Hex;
  */
 public class ByteUtils {
     private static final Logger LOG = Logger.getLogger(ByteUtils.class.getName());
+    private static final ByteUtils  INCTANCE = new ByteUtils();
     /**
      * 
      * @param in
@@ -47,6 +48,10 @@ public class ByteUtils {
     
     public BigInteger toBigInteger(byte[] bytes) {
         return new BigInteger(1, bytes);
+    }
+    
+    public static ByteUtils factory() {
+        return INCTANCE;
     }
     /*
     public  byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
