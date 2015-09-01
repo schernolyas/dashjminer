@@ -5,10 +5,13 @@
  */
 package ru.schernolyas.stratum.client.method;
 
+import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonReader;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
@@ -21,8 +24,7 @@ public class MiningNotify {
     private static final Logger LOG = Logger.getLogger(MiningNotify.class.getName());
 
     public static String METHOD_NAME = "mining.notify";
-    private String inJson;
-    private JsonObject jsonObject;
+    
     private byte[] jobId;
     private byte[] previousBlockHash;
     private byte[] coinBase1;
@@ -33,82 +35,120 @@ public class MiningNotify {
     private byte[] currentTime;
     private boolean cleanJobs;
 
-    public MiningNotify(String inJson, JsonObject jsonObject) throws DecoderException {
-        this.inJson = inJson;
-        this.jsonObject = jsonObject;
-        processJsonObject();
+    
 
-    }
-
-    private void processJsonObject() throws DecoderException {
-        JsonArray paramsArray = this.jsonObject.getJsonArray("params");
-        this.jobId = Hex.decodeHex(paramsArray.getJsonString(0).getString().toCharArray());
-        LOG.log(Level.INFO, "jobId : {0}", new Object[]{Hex.encodeHexString(jobId)});
-        this.previousBlockHash = Hex.decodeHex(paramsArray.getJsonString(1).getString().toCharArray());
-        LOG.log(Level.INFO, "previousBlockHash : {0}", new Object[]{Hex.encodeHexString(previousBlockHash)});
-        this.coinBase1 = Hex.decodeHex(paramsArray.getJsonString(2).getString().toCharArray());
-        LOG.log(Level.INFO, "coinBase1 : {0}", new Object[]{Hex.encodeHexString(coinBase1)});
-        this.coinBase2 = Hex.decodeHex(paramsArray.getJsonString(3).getString().toCharArray());
-        LOG.log(Level.INFO, "coinBase2 : {0}", new Object[]{Hex.encodeHexString(coinBase2)});
+    private static MiningNotify processJsonObject(JsonObject jsonObject) throws DecoderException {
+        MiningNotify miningNotify = new MiningNotify();
+        JsonArray paramsArray = jsonObject.getJsonArray("params");
+        miningNotify.setJobId(Hex.decodeHex(paramsArray.getJsonString(0).getString().toCharArray()));
+        LOG.log(Level.INFO, "jobId : {0}", new Object[]{Hex.encodeHexString(miningNotify.getJobId())});
+        miningNotify.setPreviousBlockHash(Hex.decodeHex(paramsArray.getJsonString(1).getString().toCharArray()));
+        LOG.log(Level.INFO, "previousBlockHash : {0}", new Object[]{Hex.encodeHexString(miningNotify.getPreviousBlockHash())});
+        miningNotify.setCoinBase1(Hex.decodeHex(paramsArray.getJsonString(2).getString().toCharArray()));
+        LOG.log(Level.INFO, "coinBase1 : {0}", new Object[]{Hex.encodeHexString(miningNotify.getCoinBase1())});
+        miningNotify.setCoinBase2(Hex.decodeHex(paramsArray.getJsonString(3).getString().toCharArray()));
+        LOG.log(Level.INFO, "coinBase2 : {0}", new Object[]{Hex.encodeHexString(miningNotify.getCoinBase2())});
         JsonArray merkleBranchesArray = paramsArray.getJsonArray(4);
-        this.merkleBranches = new byte[merkleBranchesArray.size()][];
+        miningNotify.setMerkleBranches( new byte[merkleBranchesArray.size()][]);
         for (int i = 0; i < merkleBranchesArray.size(); i++) {
-            merkleBranches[i] = Hex.decodeHex(merkleBranchesArray.getJsonString(i).getString().toCharArray());
+            miningNotify.getMerkleBranches()[i] = Hex.decodeHex(merkleBranchesArray.getJsonString(i).getString().toCharArray());
         }
-        for (int i = 0; i < merkleBranches.length; i++) {
-            byte[] merkleBranche = merkleBranches[i];
+        for (int i = 0; i < miningNotify.getMerkleBranches().length; i++) {
+            byte[] merkleBranche = miningNotify.getMerkleBranches()[i];
             LOG.log(Level.INFO, "merkleBranche N {0} : {1}", new Object[]{i, Hex.encodeHexString(merkleBranche)});
         }
-        this.blockVersion = Hex.decodeHex(paramsArray.getJsonString(5).getString().toCharArray());
-        LOG.log(Level.INFO, "blockVersion : {0}", new Object[]{Hex.encodeHexString(blockVersion)});
-        this.encodedNetworkDifficulty = Hex.decodeHex(paramsArray.getJsonString(6).getString().toCharArray());
-        LOG.log(Level.INFO, "encodedNetworkDifficulty : {0}", new Object[]{Hex.encodeHexString(encodedNetworkDifficulty)});
+        miningNotify.setBlockVersion(Hex.decodeHex(paramsArray.getJsonString(5).getString().toCharArray()));
+        LOG.log(Level.INFO, "blockVersion : {0}", new Object[]{Hex.encodeHexString(miningNotify.getBlockVersion())});
+        miningNotify.setEncodedNetworkDifficulty(Hex.decodeHex(paramsArray.getJsonString(6).getString().toCharArray()));
+        LOG.log(Level.INFO, "encodedNetworkDifficulty : {0}", new Object[]{Hex.encodeHexString(miningNotify.getEncodedNetworkDifficulty())});
         System.out.println("!"+paramsArray.getJsonString(7).getString().length());
         String str = paramsArray.getJsonString(7).getString();
         if ((str.length() & 0x01) != 0) {
             str = "0"+str;
         }
-        this.currentTime = Hex.decodeHex(str.toCharArray());
-        LOG.log(Level.INFO, "currentTime : {0}", new Object[]{Hex.encodeHexString(currentTime)});
+        miningNotify.setCurrentTime(Hex.decodeHex(str.toCharArray()));
+        LOG.log(Level.INFO, "currentTime : {0}", new Object[]{Hex.encodeHexString(miningNotify.getCurrentTime())});
         
-        this.cleanJobs = paramsArray.getBoolean(8);
-        LOG.log(Level.INFO, "cleanJobs : {0}", new Object[]{cleanJobs});
+        miningNotify.setCleanJobs(paramsArray.getBoolean(8));
+        LOG.log(Level.INFO, "cleanJobs : {0}", new Object[]{miningNotify.isCleanJobs()});
+        return miningNotify;
     }
 
     public byte[] getJobId() {
         return jobId;
     }
 
+    public void setJobId(byte[] jobId) {
+        this.jobId = jobId;
+    }
+
     public byte[] getPreviousBlockHash() {
         return previousBlockHash;
+    }
+
+    public void setPreviousBlockHash(byte[] previousBlockHash) {
+        this.previousBlockHash = previousBlockHash;
     }
 
     public byte[] getCoinBase1() {
         return coinBase1;
     }
 
+    public void setCoinBase1(byte[] coinBase1) {
+        this.coinBase1 = coinBase1;
+    }
+
     public byte[] getCoinBase2() {
         return coinBase2;
+    }
+
+    public void setCoinBase2(byte[] coinBase2) {
+        this.coinBase2 = coinBase2;
     }
 
     public byte[][] getMerkleBranches() {
         return merkleBranches;
     }
 
+    public void setMerkleBranches(byte[][] merkleBranches) {
+        this.merkleBranches = merkleBranches;
+    }
+
     public byte[] getBlockVersion() {
         return blockVersion;
+    }
+
+    public void setBlockVersion(byte[] blockVersion) {
+        this.blockVersion = blockVersion;
     }
 
     public byte[] getEncodedNetworkDifficulty() {
         return encodedNetworkDifficulty;
     }
 
+    public void setEncodedNetworkDifficulty(byte[] encodedNetworkDifficulty) {
+        this.encodedNetworkDifficulty = encodedNetworkDifficulty;
+    }
+
     public byte[] getCurrentTime() {
         return currentTime;
+    }
+
+    public void setCurrentTime(byte[] currentTime) {
+        this.currentTime = currentTime;
     }
 
     public boolean isCleanJobs() {
         return cleanJobs;
     }
 
+    public void setCleanJobs(boolean cleanJobs) {
+        this.cleanJobs = cleanJobs;
+    }
+
+    public static MiningNotify build(String jsonString) throws DecoderException {
+        JsonReader jsonReader = Json.createReader(new StringReader(jsonString));
+        JsonObject obj = jsonReader.readObject();
+        return processJsonObject(obj);
+    }
 }

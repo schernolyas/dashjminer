@@ -7,6 +7,10 @@ package ru.schernolyas.stratum.client.utils;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.channels.Pipe;
+import java.nio.channels.Pipe.SinkChannel;
+import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -53,6 +57,8 @@ public class ByteUtils {
     public static ByteUtils factory() {
         return INCTANCE;
     }
+    
+   
     /*
     public  byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
         LOG.log(Level.INFO, "preparePrevHash in : {0}", new Object[]{Hex.encodeHexString(prevHashButes)});

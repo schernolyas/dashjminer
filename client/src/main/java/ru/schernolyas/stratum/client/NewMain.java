@@ -25,6 +25,7 @@ import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
 import ru.schernolyas.stratum.client.method.SetDifficulty;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
+import ru.schernolyas.stratum.client.utils.CoinBaseUtil;
 import ru.schernolyas.stratum.client.utils.DifficultyUtil;
 import ru.schernolyas.stratum.client.utils.NonceTimeUtil;
 import ru.schernolyas.stratum.client.utils.X11Util;
@@ -63,29 +64,16 @@ public class NewMain {
                     + "\"" + requiredTime + "\",true]}";
             System.out.println(responseStr3);
 
-            JsonReader jsonReader = Json.createReader(new StringReader(responseStr1));
-            JsonObject obj = jsonReader.readObject();
-            Initial initial = new Initial(responseStr1, obj);
-            jsonReader = Json.createReader(new StringReader(responseStr3));
-            obj = jsonReader.readObject();
-            MiningNotify miningNotify = new MiningNotify(responseStr3, obj);
-            jsonReader = Json.createReader(new StringReader(responseStr2));
-            obj = jsonReader.readObject();
-            SetDifficulty setDifficulty = new SetDifficulty(responseStr2, obj);
+            Initial initial = Initial.build(responseStr1);
+            MiningNotify miningNotify = MiningNotify.build(responseStr3);
+            SetDifficulty setDifficulty = SetDifficulty.build(responseStr2);
             LOG.log(Level.INFO, "current difficulty : 1) byte: {0}; 2) decimal: {1}",
                     new Object[]{Hex.encodeHexString(setDifficulty.getByteDifficulty()), setDifficulty.getDecimalDifficulty()});
 
             byte[] currentTarget = DifficultyUtil.calculateTarget(setDifficulty);
             LOG.log(Level.INFO, "currentTarget : {0}", new Object[]{Hex.encodeHexString(currentTarget)});
 
-            ByteArrayOutputStream coinBaseOs = new ByteArrayOutputStream();
-            coinBaseOs.write(miningNotify.getCoinBase1());
-            coinBaseOs.write(initial.getExtraNonce1());
-            coinBaseOs.write(initial.getExtraNonce2());
-            coinBaseOs.write(miningNotify.getCoinBase2());
-            coinBaseOs.flush();
-
-            // byte[] coinBase = coinBaseOs.toByteArray();
+            byte[] coinBase = CoinBaseUtil.produceCoinBase(miningNotify, initial);
             //byte[] doubleHashCoinBase = sha256md.digest(sha256md.digest(coinBase));
             //byte[] finalMerkleRoot = MerkleTreeUtil.calculate(sha256md, doubleHashCoinBase, miningNotify.getMerkleBranches());
             byte[] finalMerkleRoot = new ByteUtils().swapOrder(Hex.decodeHex("43eb305e7a85ec9d27b3724dab6b2ede5111d54f4568a03d4181231fbd356e81".toCharArray()));
