@@ -58,7 +58,18 @@ public class ByteUtils {
         return INCTANCE;
     }
     
-   
+    public void m(List<byte[]> arrays ) throws IOException {
+        Pipe arraysConcatPipe=Pipe.open();
+        Pipe.SinkChannel writeChannel=arraysConcatPipe.sink();
+        Pipe.SourceChannel readChannel =arraysConcatPipe.source();
+        int wrireBytes = 0;
+        for (byte[] array : arrays) {
+            wrireBytes=wrireBytes+writeChannel.write(ByteBuffer.wrap(array));
+        }
+        ByteBuffer g =ByteBuffer.allocate(wrireBytes);
+        
+        
+    }
     /*
     public  byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
         LOG.log(Level.INFO, "preparePrevHash in : {0}", new Object[]{Hex.encodeHexString(prevHashButes)});
