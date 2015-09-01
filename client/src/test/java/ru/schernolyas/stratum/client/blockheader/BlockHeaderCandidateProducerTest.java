@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.schernolyas.stratum.client.dto;
+package ru.schernolyas.stratum.client.blockheader;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -19,9 +19,9 @@ import ru.schernolyas.stratum.client.utils.NonceTimeUtil;
  *
  * @author schernolyas
  */
-public class BlockHeaderTemplateProducerTest {
+public class BlockHeaderCandidateProducerTest {
     
-    public BlockHeaderTemplateProducerTest() {
+    public BlockHeaderCandidateProducerTest() {
     }
     
     @BeforeClass
@@ -41,7 +41,7 @@ public class BlockHeaderTemplateProducerTest {
     }
 
     /**
-     * Test of produceBlockHeader method, of class BlockHeaderTemplateProducer.
+     * Test of produceBlockHeaderCandidate method, of class BlockHeaderCandidateProducer.
      * @throws org.apache.commons.codec.DecoderException
      */
     @Test
@@ -55,8 +55,8 @@ public class BlockHeaderTemplateProducerTest {
         byte[] time = Hex.decodeHex("53bf3cd7".toCharArray());
         long startNonce = 0xFEDCBAFA;
         NonceTimeUtil nonceTimeUtil = new NonceTimeUtil(time, startNonce);
-        BlockHeaderTemplateProducer instance = new BlockHeaderTemplateProducer(blockHeaderTemplate, nonceTimeUtil);
-        byte[] actualResult = instance.produceBlockHeader();
+        BlockHeaderCandidateProducer instance = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeUtil);
+        byte[] actualResult = instance.produceBlockHeaderCandidate();
         System.out.println(Hex.encodeHexString(actualResult));
         assertArrayEquals(expectedResult, actualResult);
         assertEquals(expectedResult.length, 80L);        
