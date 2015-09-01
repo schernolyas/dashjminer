@@ -5,7 +5,6 @@
  */
 package ru.schernolyas.stratum.client.utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
@@ -17,13 +16,8 @@ import ru.schernolyas.stratum.client.method.MiningNotify;
 public class CoinBaseUtil {
 
     public static byte[] produceCoinBase(MiningNotify miningNotify, Initial initial) throws IOException {
-        ByteArrayOutputStream coinBaseOs = new ByteArrayOutputStream();
-        coinBaseOs.write(miningNotify.getCoinBase1());
-        coinBaseOs.write(initial.getExtraNonce1());
-        coinBaseOs.write(initial.getExtraNonce2());
-        coinBaseOs.write(miningNotify.getCoinBase2());
-        coinBaseOs.flush();
-        return coinBaseOs.toByteArray();
+        return ByteUtils.concat(miningNotify.getCoinBase1(),initial.getExtraNonce1(),
+                initial.getExtraNonce2(),miningNotify.getCoinBase2());
     }
 
 }

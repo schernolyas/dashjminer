@@ -57,7 +57,7 @@ public class NewMain {
 
             String responseStr1 = "{\"id\":1,\"result\":[[[\"mining.set_difficulty\",\"deadbeefcafebabe76df0c0000000000\"],[\"mining.notify\",\"deadbeefcafebabe76df0c0000000000\"]],\"100578b3\",4],\"error\":null}";
             String responseStr2 = "{\"id\":null,\"method\":\"mining.set_difficulty\",\"params\":[3898.66485602]}";
-            String responseStr3 = "{\"id\":null,\"method\":\"mining.notify\",\"params\":[\"3ae3\",\"" + Hex.encodeHexString(new ByteUtils().swapOrder(Hex.decodeHex("0000000000108d4b9231f4ec99ab5dc970b6ec740745f44eee0754f67d598ac3".toCharArray()))) + "\","
+            String responseStr3 = "{\"id\":null,\"method\":\"mining.notify\",\"params\":[\"3ae3\",\"" + Hex.encodeHexString(ByteUtils.swapOrder(Hex.decodeHex("0000000000108d4b9231f4ec99ab5dc970b6ec740745f44eee0754f67d598ac3".toCharArray()))) + "\","
                     + "\"01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff200316f904043900de5508\","
                     + "\"0d2f6e6f64655374726174756d2f0000000002cbd50411000000001976a914edc3ed0229526ea4c728d714b5289f97e7f63a2188acc5d50411000000001976a9141e3ad74cc9b5c1281464892199f2170bedb9c40788ac00000000\","
                     + "[\"9c864cae10cb55a97dd9a04cd1d22144b688377f505f9bc701925f65baedb430\",\"836f0f697b6d3a6283c7c264a5a144c893e7b077ef4aea87dbb4f32d81ac86c5\"],\"00000002\",\"1b10cf42\","
@@ -76,22 +76,22 @@ public class NewMain {
             byte[] coinBase = CoinBaseUtil.produceCoinBase(miningNotify, initial);
             //byte[] doubleHashCoinBase = sha256md.digest(sha256md.digest(coinBase));
             //byte[] finalMerkleRoot = MerkleTreeUtil.calculate(sha256md, doubleHashCoinBase, miningNotify.getMerkleBranches());
-            byte[] finalMerkleRoot = new ByteUtils().swapOrder(Hex.decodeHex("43eb305e7a85ec9d27b3724dab6b2ede5111d54f4568a03d4181231fbd356e81".toCharArray()));
+            byte[] finalMerkleRoot = ByteUtils.swapOrder(Hex.decodeHex("43eb305e7a85ec9d27b3724dab6b2ede5111d54f4568a03d4181231fbd356e81".toCharArray()));
             LOG.log(Level.INFO, "finalMerkleRoot : {0}", new Object[]{Hex.encodeHexString(finalMerkleRoot)});
             BlockHeader blockHeader = new BlockHeader();
-            ByteUtils byteUtils = new ByteUtils();
+            
             long testNonceValue = 5628506L;
             NonceTimeUtil nonceUtil = new NonceTimeUtil(miningNotify.getCurrentTime(), testNonceValue);
             LOG.log(Level.INFO, "nonceUtil.getNTime() : {0}", new Object[]{Hex.encodeHexString(nonceUtil.getNTime())});
-            blockHeader.setVersion(byteUtils.littleEndian(miningNotify.getBlockVersion()));
+            blockHeader.setVersion(ByteUtils.littleEndian(miningNotify.getBlockVersion()));
             LOG.log(Level.INFO, "blockHeader.getVersion() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getVersion())});
-            blockHeader.setMerkleRoot(byteUtils.littleEndian(byteUtils.swapOrder(finalMerkleRoot)));
+            blockHeader.setMerkleRoot(ByteUtils.littleEndian(ByteUtils.swapOrder(finalMerkleRoot)));
             LOG.log(Level.INFO, "blockHeader.getMerkleRoot() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getMerkleRoot())});
-            blockHeader.setPrevHash(byteUtils.littleEndian(byteUtils.swapOrder(miningNotify.getPreviousBlockHash())));
+            blockHeader.setPrevHash(ByteUtils.littleEndian(ByteUtils.swapOrder(miningNotify.getPreviousBlockHash())));
             LOG.log(Level.INFO, "blockHeader.getPrevHash() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getPrevHash())});
             //blockHeader.setnTime(byteUtils.littleEndian(nonceUtil.getNTime()));
             //LOG.log(Level.INFO, "blockHeader.getnTime() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnTime())});
-            blockHeader.setnBit(byteUtils.littleEndian(miningNotify.getEncodedNetworkDifficulty()));
+            blockHeader.setnBit(ByteUtils.littleEndian(miningNotify.getEncodedNetworkDifficulty()));
             LOG.log(Level.INFO, "blockHeader.getnBit() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnBit())});
             //blockHeader.setNonce(byteUtils.littleEndian(nonceUtil.getNonce()));
             //LOG.log(Level.INFO, "blockHeader.getNonce() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getNonce())});
@@ -108,7 +108,7 @@ public class NewMain {
 
             LOG.log(Level.INFO, "currentTarget: {0}; littleEndian x11 value : {1}; ",
                     new Object[]{Hex.encodeHexString(currentTarget),
-                        Hex.encodeHexString(new ByteUtils().littleEndian(x11Hash))});
+                        Hex.encodeHexString(ByteUtils.littleEndian(x11Hash))});
             
         } catch (DecoderException | NoSuchAlgorithmException e) {
             e.printStackTrace();

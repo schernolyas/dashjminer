@@ -5,12 +5,16 @@
  */
 package ru.schernolyas.stratum.client.dto;
 
+import java.io.IOException;
+import ru.schernolyas.stratum.client.utils.ByteUtils;
+
 /**
  *
  * @author Сергей
  */
 public class BlockHeader {
-    private static final byte[] DEFAULT_4_BYTES = new byte[]{0,0,0,0};
+
+    private static final byte[] DEFAULT_4_BYTES = new byte[]{0, 0, 0, 0};
     private byte[] version;
     private byte[] prevHash;
     private byte[] merkleRoot;
@@ -65,18 +69,15 @@ public class BlockHeader {
     public void setNonce(byte[] nonce) {
         this.nonce = nonce;
     }
-    
-    public byte[] toBlockHeader() {
-        byte[] block = new byte[80];
-        System.arraycopy(version, 0, block, 0, 4);
-        System.arraycopy(prevHash, 0, block, 4, 32);
-        System.arraycopy(merkleRoot, 0, block, (4+32), 32);
-        System.arraycopy(nTime, 0, block, (4+32+32), 4);
-        System.arraycopy(nBit, 0, block, (4+32+32+4), 4);
-        System.arraycopy(nonce, 0, block, (4+32+32+4+4), 4);
-        return block;
+
+    public byte[] toBlockHeader() throws IOException {
+        return ByteUtils.concat(version, prevHash, merkleRoot, nTime, nBit, nonce);
     }
-    
-    
-    
+
+    public static BlockHeader build() {
+        BlockHeader header = new BlockHeader();
+        return header;
+
+    }
+
 }

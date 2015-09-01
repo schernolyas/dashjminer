@@ -16,9 +16,8 @@ public class BlockHeaderTemplateProducer {
 
     private static final int NONCE_POSITION = 4 + 32 + 32 + 4 + 4;
     private static final int TIME_POSITION = 4 + 32 + 32;
-    private byte[] blockHeaderTemplateCopy = new byte[80];
-    private NonceTimeUtil nonceTimeUtil;
-    ByteUtils byteUtils = new ByteUtils();
+    private final byte[] blockHeaderTemplateCopy = new byte[80];
+    private final NonceTimeUtil nonceTimeUtil;
 
     public BlockHeaderTemplateProducer(byte[] blockHeaderTemplate, NonceTimeUtil nonceTimeUtil) {
         System.arraycopy(blockHeaderTemplate, 0, blockHeaderTemplateCopy, 0, 80);
@@ -26,8 +25,8 @@ public class BlockHeaderTemplateProducer {
     }
 
     public byte[] produceBlockHeader() {
-        byte[] littleEndianTime = ByteUtils.factory().littleEndian(nonceTimeUtil.getNTime());
-        byte[] littleEndianNonce = ByteUtils.factory().littleEndian(nonceTimeUtil.getNonce());
+        byte[] littleEndianTime = ByteUtils.littleEndian(nonceTimeUtil.getNTime());
+        byte[] littleEndianNonce = ByteUtils.littleEndian(nonceTimeUtil.getNonce());
         System.arraycopy(littleEndianTime, 0, blockHeaderTemplateCopy, TIME_POSITION, 4);
         System.arraycopy(littleEndianNonce, 0, blockHeaderTemplateCopy, NONCE_POSITION, 4);
         return blockHeaderTemplateCopy;

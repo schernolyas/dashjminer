@@ -44,27 +44,44 @@ public class ByteUtilsTest {
      * hex (5628506) -> 55E25A
      * little-endian hex (5628506) -> 5ae25500
      * Test of littleEndian method, of class ByteUtils.
+     * @throws org.apache.commons.codec.DecoderException
      */
     @Test
     public void testLittleEndian() throws DecoderException {
         System.out.println("littleEndian");
         byte[] in = Hex.decodeHex("01234567".toCharArray());
-        ByteUtils instance = new ByteUtils();
         byte[] expResult = Hex.decodeHex("67452301".toCharArray());
-        byte[] result = instance.littleEndian(in);
+        byte[] result = ByteUtils.littleEndian(in);
         System.out.println("result :"+Hex.encodeHexString(result));
         assertArrayEquals(expResult, result);
     }
     /**
      * Test of littleEndian method, of class ByteUtils.
+     * @throws org.apache.commons.codec.DecoderException
+     * @throws java.io.IOException
      */
     @Test
     public void testSwapOrder() throws DecoderException, IOException {
         System.out.println("swapOrder");
         byte[] in = Hex.decodeHex("1234".toCharArray());
-        ByteUtils instance = new ByteUtils();
         byte[] expResult = Hex.decodeHex("4321".toCharArray());
-        byte[] result = instance.swapOrder(in);
+        byte[] result = ByteUtils.swapOrder(in);
+        System.out.println("result :"+Hex.encodeHexString(result));
+        assertArrayEquals(expResult, result);
+    }
+    
+    /**
+     * Test of concat method, of class ByteUtils.
+     * @throws java.io.IOException
+     */
+    @Test
+    public void testConcat() throws IOException {
+        System.out.println("concat");
+        byte[][] in = new byte[2][];
+        in[0]=new byte[]{1,2};
+        in[1]=new byte[]{3,4};
+        byte[] expResult = new byte[]{1,2,3,4};
+        byte[] result = ByteUtils.concat(in);
         System.out.println("result :"+Hex.encodeHexString(result));
         assertArrayEquals(expResult, result);
     }

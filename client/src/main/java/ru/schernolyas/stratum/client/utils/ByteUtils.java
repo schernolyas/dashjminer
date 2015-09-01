@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.Pipe;
-import java.nio.channels.Pipe.SinkChannel;
-import java.util.List;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -28,7 +26,7 @@ public class ByteUtils {
      * @see http://www.bogotobogo.com/Embedded/Little_endian_big_endian_htons_htonl.php
      * @return 
      */
-    public  byte[] littleEndian(byte[] in)  {
+    public static byte[] littleEndian(byte[] in)  {
         byte[] reversed = new byte[in.length];
         int reverse = in.length-1;
         int forward = 0;
@@ -45,20 +43,16 @@ public class ByteUtils {
      * @throws DecoderException  if hex data is incorrect
      */
     
-    public byte[] swapOrder(byte[] in) throws DecoderException  {      
+    public static byte[] swapOrder(byte[] in) throws DecoderException  {      
         StringBuilder builder = new StringBuilder(Hex.encodeHexString(in)).reverse();        
         return Hex.decodeHex(builder.toString().toCharArray());
     }
     
-    public BigInteger toBigInteger(byte[] bytes) {
+    public static BigInteger toBigInteger(byte[] bytes) {
         return new BigInteger(1, bytes);
     }
     
-    public static ByteUtils factory() {
-        return INCTANCE;
-    }
-    
-    public void m(List<byte[]> arrays ) throws IOException {
+    public static byte[] concat(byte[]... arrays ) throws IOException {
         Pipe arraysConcatPipe=Pipe.open();
         Pipe.SinkChannel writeChannel=arraysConcatPipe.sink();
         Pipe.SourceChannel readChannel =arraysConcatPipe.source();
@@ -66,9 +60,9 @@ public class ByteUtils {
         for (byte[] array : arrays) {
             wrireBytes=wrireBytes+writeChannel.write(ByteBuffer.wrap(array));
         }
-        ByteBuffer g =ByteBuffer.allocate(wrireBytes);
-        
-        
+        ByteBuffer resultBuffer =ByteBuffer.allocate(wrireBytes);
+        int readBytes =readChannel.read(resultBuffer);
+        return resultBuffer.array();
     }
     /*
     public  byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
