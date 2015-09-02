@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.RecursiveTask;
+import java.util.logging.Logger;
 import ru.schernolyas.stratum.client.blockheader.BlockHeaderCandidateProducer;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.ClearJobsHolder;
@@ -21,7 +22,8 @@ import ru.schernolyas.stratum.client.utils.X11Util;
  * @author schernolyas
  */
 public class MimingRecursiveTask extends RecursiveTask<byte[]> {
-
+    private static final Logger LOG = Logger.getLogger(MimingRecursiveTask.class.getName());
+    
     private static int GROUP_SIZE = 10;
     private boolean isManagerTask = true;
     private byte[] blockHeaderTemplate;
@@ -49,7 +51,6 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
         long maxIteractions = NonceTimeUtil.MAX_NONCE;
 
         List<MimingRecursiveTask> forks = createSubtasks();
-        boolean needRunNextIteration = false;
         do {
             for (Iterator<MimingRecursiveTask> iterator = forks.iterator(); iterator.hasNext();) {
                 MimingRecursiveTask subtask = iterator.next();
@@ -62,16 +63,22 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
                     result = localResult;
                 }
             }
-            boolean needClearJobs = ClearJobsHolder.needClearJobs();
-            boolean hasNewBlock = result!=null; 
+            
+        } while (defineNeedRunNextIteration(result));
+        return result;
+
+    }
+    
+    private boolean defineNeedRunNextIteration(byte[] result) {
+        boolean needRunNextIteration = false;
+        boolean needClearJobs = ClearJobsHolder.needClearJobs();
+            boolean hasNewBlock = (result!=null); 
             if (needClearJobs) {
                 needRunNextIteration=false;
             } else  {
                 needRunNextIteration = !hasNewBlock;
             }
-        } while (needRunNextIteration);
-        return result;
-
+            return needRunNextIteration;
     }
 
     private List<MimingRecursiveTask> createSubtasks() {
