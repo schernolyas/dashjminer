@@ -53,7 +53,7 @@ public class BlockHeaderCandidateProducerTest {
                 + "454fd51151de2e6bab4d72b3279dec857a5e30eb43d73cbf5342cf101bfabadcfe").toCharArray());
         
         byte[] time = Hex.decodeHex("53bf3cd7".toCharArray());
-        long startNonce = 0xFEDCBAFA;
+        long startNonce = 0xFEDCBAFA-1;
         NonceTimeUtil nonceTimeUtil = new NonceTimeUtil(time, startNonce);
         BlockHeaderCandidateProducer instance = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeUtil);
         byte[] actualResult = instance.produceBlockHeaderCandidate();

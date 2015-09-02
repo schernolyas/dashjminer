@@ -19,7 +19,7 @@ import org.apache.commons.codec.binary.Hex;
 public class NonceTimeUtil {
 
     private static final Logger LOG = Logger.getLogger(NonceTimeUtil.class.getName());
-    private static final long MAX_4_BUTES = 0xFFFFFFFF;
+    public static final long MAX_NONCE = 0xFFFFFFFF;
 
     private Long nTime;
     private AtomicLong nonce;
@@ -28,33 +28,26 @@ public class NonceTimeUtil {
         this.nTime = new BigInteger(nTime).longValue();
         this.nonce = new AtomicLong(0L);
     }
+
     public NonceTimeUtil(byte[] nTime, long startNonce) throws DecoderException {
         this.nTime = new BigInteger(nTime).longValue();
         //5628506L
         this.nonce = new AtomicLong(startNonce);
     }
 
-    public void incNonce() {
-        long newNonce = nonce.incrementAndGet();
-        if (newNonce>MAX_4_BUTES) {
-            nonce.set(0);
-        }
-    }
-
-    public byte[] getNonce() {
-        byte[] resultNonceBytes = new byte[]{0,0,0,0};
-        byte[] nonceIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(nonce.get()).array();
+    public byte[] getNonce(boolean needIncrement) {
+        long currentNonceValue =needIncrement ? nonce.incrementAndGet() :  nonce.get();        
+        byte[] resultNonceBytes = new byte[]{0, 0, 0, 0};
+        byte[] nonceIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(currentNonceValue).array();
         System.arraycopy(nonceIntBytes, 4, resultNonceBytes, 0, 4);
         return resultNonceBytes;
     }
-    
-    
-    public byte[] getNTime()  {
+
+    public byte[] getNTime() {
         byte[] nTimeBytes = new byte[]{0, 0, 0, 0};
         byte[] nTimeIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(nTime).array();
         System.arraycopy(nTimeIntBytes, 4, nTimeBytes, 0, 4);
         return nTimeBytes;
     }
-
 
 }
