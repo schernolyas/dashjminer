@@ -1,0 +1,120 @@
+Alright, I finally managed to fix my bugs and get a full roundtrip. Here is an example for a full communication with a Pool. I don't explain everything in detail as the API description can be found elsewhere.
+
+a) Suscription
+
+{"id": 1, "method": "mining.subscribe", "params": []}
+{"error": null, "id": 1, "result": [["mining.notify", "ae6812eb4cd7735a302a8a9dd95cf71f"], "f8002c90", 4]}
+We suscribe with the server. This has no parameters. As result, we receive some Suscription ID, and our Extranonce1 + extranonce2 size, which we need for later. b) authorization
+
+{"params": ["User", "password"], "id": 2, "method": "mining.authorize"}
+{"error": null, "id": 2, "result": true}
+Authorize worker with Username + password. No parameters to store from the result. c) Server -> difficulty
+
+{"params": [32], "id": null, "method": "mining.set_difficulty"}
+Sets the difficulty to 32, defining our target. The resulting difficulty can be calculated as
+
+0x0000FFFF00000000000000000000000000000000000000000000000000000000 / 32 =
+0x000007fff8000000000000000000000000000000000000000000000000000000
+Now, the fun part: d) Block info
+
+{"params": ["b3ba", "7dcf1304b04e79024066cd9481aa464e2fe17966e19edf6f33970e1fe0b60277", "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff270362f401062f503253482f049b8f175308", "0d2f7374726174756d506f6f6c2f000000000100868591052100001976a91431482118f1d7504daf1c001cbfaf91ad580d176d88ac00000000", ["57351e8569cb9d036187a79fd1844fd930c1309efcd16c46af9bb9713b6ee734", "936ab9c33420f187acae660fcdb07ffdffa081273674f0f41e6ecc1347451d23"], "00000002", "1b44dfdb", "53178f9b", true], "id": null, "method": "mining.notify"}
+I split the parameters and assign them to variables
+
+job_id = "b3ba"
+prevhash = "7dcf1304b04e79024066cd9481aa464e2fe17966e19edf6f33970e1fe0b60277"
+coinb1 = "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff270362f401062f503253482f049b8f175308"
+coinb2 = "0d2f7374726174756d506f6f6c2f000000000100868591052100001976a91431482118f1d7504daf1c001cbfaf91ad580d176d88ac00000000"
+Merklebranches = [ 
+    "57351e8569cb9d036187a79fd1844fd930c1309efcd16c46af9bb9713b6ee734", 
+    "936ab9c33420f187acae660fcdb07ffdffa081273674f0f41e6ecc1347451d23"
+    ]
+version = "00000002"
+nbits = "1b44dfdb"
+ntime = "53178f9b"
+clean_jobs = true// Not required for block, just for completeness
+What we also need is extranonce1 and extranonce 2:
+
+extranonce1 = "f8002c90" // from earlier
+extranonce2 = "00000002" // can be anything, but 4 bytes
+With this, we can start building our Merkle root: First, the coinbase:
+
+coinbase = coinb1  + extranonce1 + extranonce2 + coinb2;
+coinbase = "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff270362f401062f503253482f049b8f175308f8002c90000000020d2f7374726174756d506f6f6c2f000000000100868591052100001976a91431482118f1d7504daf1c001cbfaf91ad580d176d88ac00000000"
+Now, we convert this coinbase into binary. No flips or BE-LE conversions required, straight from left to right. The resulting binary data is hashed with sha256(sha256(data)). From here on, I will post binary as hex representation, but as is: Left to right, no endianess conversion
+
+resulting hash : 280b3927f6763b1ed90cae2a3cef4d27c743f6a7d91e3901dc3816a46acacf36
+This is the start for the merkle concatination. Concatinating means just joining them. 32 byte for the hash and 32 byte for each merkleroot result in 64 byte of data to hash.
+
+for each Merkle_branch
+    byte[64] = hash + merkle_branch
+    hash = sha256(sha256(byte))
+end
+For the example it looks like this:
+
+byte = 280b3927f6763b1ed90cae2a3cef4d27c743f6a7d91e3901dc3816a46acacf36 + 
+57351e8569cb9d036187a79fd1844fd930c1309efcd16c46af9bb9713b6ee734
+
+hash = e6df228610b9f0e96a42a4877565627a3e1e133e984b6c46ff6e44b7dc9dc056
+
+byte = e6df228610b9f0e96a42a4877565627a3e1e133e984b6c46ff6e44b7dc9dc056 + 936ab9c33420f187acae660fcdb07ffdffa081273674f0f41e6ecc1347451d23
+hash = 0b1edc1ccf82d3214423fc68234f4946119e39df2cc2137e31ebc186191d5422
+which is the final merkle_root. There is no need of converting it back to hex, it can be kept in binary format for the next step
+
+e) Block header The block header is build with all previous information + the calculated merkle root. It results in 80 byte of Data
+
+blockHeader {
+    version[4]
+    prevhash[32]
+    merkle_root[32]
+    ntime[4]
+    nbit[4]
+    nonce[4]
+}
+Here, byte order gets a bit tricky: All 4 byte types are Little endian, and bytes have to be flipped. Merkleroot can be copied 1:1, without flipping bytes. prevhash is what surprised me the most. It can be best viewed as an array of 8 4byte ints, where each of these ints has to be converted to LE, but the order is kept left to right. I show it in the example:
+
+version:  00000002 --> 02000000
+prevhash: 7dcf1304 b04e7902 4066cd94 81aa464e 2fe17966 e19edf6f 33970e1f e0b60277
+        -->   0413cf7d 02794eb0 94cd6640 4e46aa81 6679e12f 6fdf9ee1 1f0e9733 7702b6e0 // 8 ints left to right, each one flipped
+merkle:   0b1edc1c cf82d321 4423fc68 234f4946 119e39df 2cc2137e 31ebc186 191d5422 // nothing changed 
+ntime:    53178f9b --> 9b8f1753
+nbits:    1b44dfdb --> dbdf441b
+Results in the following bytestream:
+
+020000000413cf7d02794eb094cd66404e46aa816679e12f6fdf9ee11f0e97337702b6e00b1edc1ccf82d3214423fc68234f4946119e39df2cc2137e31ebc186191d54229b8f1753dbdf441b00000000
+Note that we don't need the padding or anything, like the bitcoin implementations have, the 80 bytes are all we need. Now, lets hash it f) hashing and result sending this through a scrypt cycle results in the following hash:
+
+f6f13e350aa4f251e192ab8a78690ee99f1cc2d930d4ae16c4172a0a8aefddd0
+Well, this is not the hash we are looking for... So we start playing with nonce first, and if thats not enough we can increase the ntime. Until finally, after a long time, we try
+
+nonce = "00007f8a" // BigEndian
+time = "53178f9f" // BigEndian
+This gives us the following Block and resulting hash:
+
+block = 020000000413cf7d02794eb094cd66404e46aa816679e12f6fdf9ee11f0e97337702b6e00b1edc1ccf82d3214423fc68234f4946119e39df2cc2137e31ebc186191d54229f8f1753dbdf441b8a7f0000
+hash = 7441207b6390054623bc5e659ffe2581356dafc5ec41db44d27de85035000000
+Looks kind of high, but here again, endianess has to be considered. To compare it with our Target, we have to compare high to low. And, not to forget that we have to change the byte order of our target:
+
+target = 0x000007fff8000000000000000000000000000000000000000000000000000000
+   --->  0x000000000000000000000000000000000000000000000000000000f8ff070000
+Now if we compare them:
+
+000000000000000000000000000000000000000000000000000000f8ff070000
+7441207b6390054623bc5e659ffe2581356dafc5ec41db44d27de85035000000
+We see that the hash is below our target, and we can submit it. Alternatively we can look at them in the other byte order (in which it is printed most of the time)
+
+000007fff8000000000000000000000000000000000000000000000000000000
+0000003550e87dd244db41ecc5af6d358125fe9f655ebc23460590637b204174
+Which looks the same, mostly. This leads us to our final step: g) Submit Share Now we collect the variable parameters we used, and send them to the server.
+
+user = "user"
+job_id = "b3ba"
+extranonce2 = "00000002" // No byte swapping needed. Its how we put it in the coinbase
+ntime = "53178f9f" // This is Big Endian. The ntime in the block_header is little endian. IF you read it from your block_header, don't forget to swap
+nonce = "00007f8a" // Same here. Convert To BigEndian before sending
+We pack these Data in a neat JSon wrapper, and send it off to the server:
+
+{"params": ["User", "b3ba", "00000002", "53178f9f", "00007f8a"], "id": 4, "method": "mining.submit"}
+And, if all works well, and we have no other problems (like stale shares or anything), we get a positive response:
+
+{"error": null, "id": 4, "result": true}
+And thats it! For more shares repeat as often as wanted.
