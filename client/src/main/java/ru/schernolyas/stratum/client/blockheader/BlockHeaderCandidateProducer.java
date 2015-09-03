@@ -38,7 +38,7 @@ public class BlockHeaderCandidateProducer {
      */
     public byte[] produceBlockHeaderCandidate() {
         byte[] littleEndianTime = ByteUtils.littleEndian(nonceTimeUtil.getNTime());
-        byte[] littleEndianNonce = ByteUtils.littleEndian(nonceTimeUtil.getNonce(true));
+        byte[] littleEndianNonce = ByteUtils.littleEndian(nonceTimeUtil.getNonce(false));
         System.arraycopy(littleEndianTime, 0, blockHeaderTemplateCopy, TIME_POSITION, 4);
         System.arraycopy(littleEndianNonce, 0, blockHeaderTemplateCopy, NONCE_POSITION, 4);
         return blockHeaderTemplateCopy;

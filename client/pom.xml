@@ -32,6 +32,13 @@
             <version>1.0.2</version>
             <type>jar</type>
         </dependency>
+        <!--Vertx provided dependencies -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+       
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

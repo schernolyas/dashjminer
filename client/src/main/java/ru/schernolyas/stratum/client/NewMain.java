@@ -19,6 +19,7 @@ import ru.schernolyas.stratum.client.blockheader.BlockHeaderTemplateProducer;
 import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
 import ru.schernolyas.stratum.client.method.SetDifficulty;
+import ru.schernolyas.stratum.client.minimg.MiningManager;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.CoinBaseUtil;
 import ru.schernolyas.stratum.client.utils.DifficultyUtil;
@@ -68,24 +69,30 @@ public class NewMain {
             byte[] currentTarget = DifficultyUtil.calculateTarget(setDifficulty);
             LOG.log(Level.INFO, "currentTarget : {0}", new Object[]{Hex.encodeHexString(currentTarget)});
             long testNonceValue = 5628506L;
-            NonceTimeUtil nonceUtil = new NonceTimeUtil(miningNotify.getCurrentTime(), testNonceValue);
+            //NonceTimeUtil nonceUtil = new NonceTimeUtil(miningNotify.getCurrentTime(), testNonceValue);
+            NonceTimeUtil nonceUtil = new NonceTimeUtil(Hex.decodeHex(requiredTime.toCharArray()), testNonceValue);
 
             BlockHeaderTemplateProducer blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(miningNotify, initial);
             byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
             LOG.log(Level.INFO, "--------------------------------------------------------");
+            LOG.log(Level.INFO, "block header template : {0}", new Object[]{Hex.encodeHexString(blockHeaderTemplate)});
+            MiningManager miningManager = new MiningManager();
+            miningManager.startMining(blockHeaderTemplate, currentTarget,nonceUtil);
+            
 
             BlockHeaderCandidateProducer blockHeaderCandidateProducer = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceUtil);
             byte[] blockHeaderCandidate = blockHeaderCandidateProducer.produceBlockHeaderCandidate();
 
             LOG.log(Level.INFO, "--------------------------------------------------------");
-            LOG.log(Level.INFO, "block header template : {0}", new Object[]{Hex.encodeHexString(blockHeaderTemplate)});
+
             LOG.log(Level.INFO, "block header  : {0}", new Object[]{Hex.encodeHexString(blockHeaderCandidate)});
+
             byte[] x11Hash = X11Util.calculate(blockHeaderCandidate);
 
             LOG.log(Level.INFO, "currentTarget: {0}; littleEndian x11 value : {1}; ",
                     new Object[]{Hex.encodeHexString(currentTarget),
                         Hex.encodeHexString(ByteUtils.littleEndian(x11Hash))});
-            
+
         } catch (DecoderException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
