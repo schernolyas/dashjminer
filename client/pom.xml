@@ -26,6 +26,7 @@
             <artifactId>cryptohash</artifactId>
             <version>3.0</version>
         </dependency>
+        <!-- todo: use vert.x JSON-->
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.json</artifactId>

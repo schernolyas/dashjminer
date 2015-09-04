@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 
 /**
  *
@@ -23,6 +22,7 @@ public class NonceTimeUtil {
 
     private Long nTime;
     private AtomicLong nonce;
+    
 
     public NonceTimeUtil(byte[] nTime) throws DecoderException {
         this.nTime = new BigInteger(nTime).longValue();
