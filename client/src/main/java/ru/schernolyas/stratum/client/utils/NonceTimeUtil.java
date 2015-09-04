@@ -22,7 +22,12 @@ public class NonceTimeUtil {
 
     private Long nTime;
     private AtomicLong nonce;
-    
+
+    public NonceTimeUtil() throws DecoderException {
+
+        this.nTime = getCurrentTime();
+        this.nonce = new AtomicLong(0L);
+    }
 
     public NonceTimeUtil(byte[] nTime) throws DecoderException {
         this.nTime = new BigInteger(nTime).longValue();
@@ -35,19 +40,26 @@ public class NonceTimeUtil {
         this.nonce = new AtomicLong(startNonce);
     }
 
-    public byte[] getNonce(boolean needIncrement) {
-        long currentNonceValue =needIncrement ? nonce.incrementAndGet() :  nonce.get();        
+    public byte[] getNonce(boolean isTestMode) {
+        long currentNonceValue = isTestMode ? nonce.incrementAndGet() : nonce.get();
         byte[] resultNonceBytes = new byte[]{0, 0, 0, 0};
         byte[] nonceIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(currentNonceValue).array();
         System.arraycopy(nonceIntBytes, 4, resultNonceBytes, 0, 4);
         return resultNonceBytes;
     }
 
-    public byte[] getNTime() {
+    public byte[] getNTime(boolean isTestMode) {
         byte[] nTimeBytes = new byte[]{0, 0, 0, 0};
-        byte[] nTimeIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(nTime).array();
+        byte[] nTimeIntBytes = ByteBuffer.allocate(Long.BYTES).
+                putLong(isTestMode ? nTime : getCurrentTime()).array();
         System.arraycopy(nTimeIntBytes, 4, nTimeBytes, 0, 4);
         return nTimeBytes;
+    }
+
+    private long getCurrentTime() {
+        long miliseconds = System.currentTimeMillis();
+        long seconds = miliseconds / 1000;
+        return seconds;
     }
 
 }

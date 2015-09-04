@@ -27,7 +27,6 @@ public class Initial {
     private byte[] miningSetDifficulty;
     private byte[] extraNonce1;
     private int extraNonce2Size;
-    private byte[] extraNonce2;
 
     
     private static Initial processJsonObject(JsonObject jsonObject) throws DecoderException {
@@ -46,7 +45,6 @@ public class Initial {
         LOG.log(Level.INFO, "extraNonce1 : {0}", new Object[]{Hex.encodeHexString(initial.getExtraNonce1())});
         initial.setExtraNonce2Size(resultArray.getInt(2));
         LOG.log(Level.INFO, "extraNonce2Size : {0}", new Object[]{initial.getExtraNonce2Size()});
-        initial.setExtraNonce2(new byte[]{0, 0, 0, 2});
         return initial;
     }
 
@@ -80,14 +78,6 @@ public class Initial {
 
     public void setExtraNonce2Size(int extraNonce2Size) {
         this.extraNonce2Size = extraNonce2Size;
-    }
-
-    public byte[] getExtraNonce2() {
-        return extraNonce2;
-    }
-
-    public void setExtraNonce2(byte[] extraNonce2) {
-        this.extraNonce2 = extraNonce2;
     }
 
     public static Initial build(String jsonString) throws DecoderException {

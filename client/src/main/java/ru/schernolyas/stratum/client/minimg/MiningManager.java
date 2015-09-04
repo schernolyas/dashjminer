@@ -54,13 +54,14 @@ public class MiningManager extends Thread {
         setDifficulty = SetDifficulty.build(GlobalObjects.getSetDifficultyJsonString());
         ClearJobsHolder.setNewValue(lastMiningNotify.isCleanJobs());
 
-        BlockHeaderTemplateProducer blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(miningNotify, initial);
+        BlockHeaderTemplateProducer blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(lastMiningNotify, initial);
         byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
         byte[] currentTarget = DifficultyUtil.calculateTarget(setDifficulty);
 
         nonceUtil = new NonceTimeUtil(lastMiningNotify.getCurrentTime());
         BlockHeaderTemplateProducer blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(miningNotify, initial);
         byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
+        startMining(blockHeaderTemplate, currentTarget, nonceUtil);
 
     }
 

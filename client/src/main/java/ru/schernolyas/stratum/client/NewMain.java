@@ -19,6 +19,7 @@ import ru.schernolyas.stratum.client.blockheader.BlockHeaderTemplateProducer;
 import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
 import ru.schernolyas.stratum.client.method.SetDifficulty;
+import ru.schernolyas.stratum.client.minimg.GlobalObjects;
 import ru.schernolyas.stratum.client.minimg.MiningManager;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.CoinBaseUtil;
@@ -47,6 +48,7 @@ public class NewMain {
              String responseStr2 = "{\"id\":null,\"method\":\"mining.set_difficulty\",\"params\":[0.03125]}";
              String responseStr3 = "{\"id\":null,\"method\":\"mining.notify\",\"params\":[\"3ae3\",\"482722cd12a737f0e1bc3579227edce63a9cf1d4f39f206f00116e6800000000\",\"01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff200316f904043900de5508\",\"0d2f6e6f64655374726174756d2f0000000002cbd50411000000001976a914edc3ed0229526ea4c728d714b5289f97e7f63a2188acc5d50411000000001976a9141e3ad74cc9b5c1281464892199f2170bedb9c40788ac00000000\",[\"4809f8d8f1f4add7cc0a0aa7297885285d1d3064812afb745b4b69a256e81440\",\"305451c5617d738395b43574347970da9c0d5802b42a1bdb4d9ec2c2111575fd\"],\"00000003\",\"1b18f349\",\"55de0050\",true]}"; 
              */
+            GlobalObjects.setTestMode(true);
             long seconds = 1405041879L;
             String requiredTime = Long.toHexString(seconds);
             System.out.println("calendar: " + requiredTime);

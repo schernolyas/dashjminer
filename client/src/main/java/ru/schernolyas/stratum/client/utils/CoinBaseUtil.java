@@ -17,7 +17,8 @@ public class CoinBaseUtil {
 
     public static byte[] produceCoinBase(MiningNotify miningNotify, Initial initial) throws IOException {
         return ByteUtils.concat(miningNotify.getCoinBase1(),initial.getExtraNonce1(),
-                initial.getExtraNonce2(),miningNotify.getCoinBase2());
+                ExtraNonce2Util.createExtraNonce2(initial.getExtraNonce2Size()),
+                miningNotify.getCoinBase2());
     }
 
 }

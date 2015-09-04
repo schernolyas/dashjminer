@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 public class GlobalObjects {
 
     private static final Logger LOG = Logger.getLogger(GlobalObjects.class.getName());
+    private static boolean testMode = false;
     private static String initialJsonString;
     private static String setDifficultyJsonString;
     private static final LinkedList<String> miningNotifyJsonStrings = new LinkedList<>();
@@ -42,6 +43,15 @@ public class GlobalObjects {
     public static LinkedList<String> getMiningNotifyJsonStrings() {
         return miningNotifyJsonStrings;
     }
+
+    public static boolean isTestMode() {
+        return testMode;
+    }
+
+    public static void setTestMode(boolean testMode) {
+        GlobalObjects.testMode = testMode;
+    }
+    
 
     
 }

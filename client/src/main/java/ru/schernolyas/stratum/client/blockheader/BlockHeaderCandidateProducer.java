@@ -5,6 +5,7 @@
  */
 package ru.schernolyas.stratum.client.blockheader;
 
+import ru.schernolyas.stratum.client.minimg.GlobalObjects;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.NonceTimeUtil;
 
@@ -37,8 +38,8 @@ public class BlockHeaderCandidateProducer {
      * @return bytes of block header
      */
     public byte[] produceBlockHeaderCandidate() {
-        byte[] littleEndianTime = ByteUtils.littleEndian(nonceTimeUtil.getNTime());
-        byte[] littleEndianNonce = ByteUtils.littleEndian(nonceTimeUtil.getNonce(false));
+        byte[] littleEndianTime = ByteUtils.littleEndian(nonceTimeUtil.getNTime(GlobalObjects.isTestMode()));
+        byte[] littleEndianNonce = ByteUtils.littleEndian(nonceTimeUtil.getNonce(GlobalObjects.isTestMode()));
         System.arraycopy(littleEndianTime, 0, blockHeaderTemplateCopy, TIME_POSITION, 4);
         System.arraycopy(littleEndianNonce, 0, blockHeaderTemplateCopy, NONCE_POSITION, 4);
         return blockHeaderTemplateCopy;
