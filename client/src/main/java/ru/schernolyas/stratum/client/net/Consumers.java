@@ -13,5 +13,6 @@ public class Consumers {
     public static final String SET_DIFFICULTY ="mining.set_difficulty";
     public static final String NOTIFY ="mining.notify";
     public static final String WRITE_TO_SOCKET ="write.to.socket";
+    public static final String INITIAL ="initial";
     
 }

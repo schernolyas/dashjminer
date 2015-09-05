@@ -6,9 +6,12 @@
 package ru.schernolyas.stratum.client.minimg;
 
 import io.vertx.core.eventbus.EventBus;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import ru.schernolyas.stratum.client.blockheader.BlockHeaderTemplateProducer;
 import ru.schernolyas.stratum.client.method.Initial;
@@ -32,47 +35,75 @@ public class MiningManager extends Thread {
     private NonceTimeUtil nonceUtil = null;
     private BlockHeaderTemplateProducer blockHeaderTemplateProducer;
 
-    public MiningManager(EventBus eventBus) {
+    public MiningManager() {
         super("MiningManagerThread");
         setPriority(3);
+    }
+
+    public MiningManager(EventBus eventBus) {
+        this();
         this.eventBus = eventBus;
     }
 
     @Override
     public void run() {
         LOG.log(Level.INFO, "Thread for MiningManager started");
+        LOG.log(Level.INFO, "has all data for start mining? {0}", new Object[]{hasAllDataForMining()});
 
-        while (hasAllDataForMining()) {
+        while (!hasAllDataForMining()) {
             try {
-                Thread.sleep(1000);
+                sleep(1000);
             } catch (InterruptedException e) {
             }
         }
-        //  has all data for mining. let's go
-        initial = Initial.build(GlobalObjects.getInitialJsonString());
-        lastMiningNotify = MiningNotify.build(GlobalObjects.getMiningNotifyJsonStrings().getLast());
-        setDifficulty = SetDifficulty.build(GlobalObjects.getSetDifficultyJsonString());
-        ClearJobsHolder.setNewValue(lastMiningNotify.isCleanJobs());
+        while (true) {
+            try {
+                //  has all data for mining. let's go
+                LOG.log(Level.INFO, "GlobalObjects.getInitialJsonString(): {0}", new Object[]{GlobalObjects.getInitialJsonString()});
+                initial = Initial.build(GlobalObjects.getInitialJsonString());
+                LOG.log(Level.INFO, "GlobalObjects.getLastMiningNotifyJsonString(): {0}", new Object[]{GlobalObjects.getLastMiningNotifyJsonString()});
+                lastMiningNotify = MiningNotify.build(GlobalObjects.getLastMiningNotifyJsonString());
+                LOG.log(Level.INFO, "GlobalObjects.getSetDifficultyJsonString(): {0}", new Object[]{GlobalObjects.getSetDifficultyJsonString()});
+                setDifficulty = SetDifficulty.build(GlobalObjects.getSetDifficultyJsonString());
+                ClearJobsHolder.setNewValue(lastMiningNotify.isCleanJobs());
 
-        BlockHeaderTemplateProducer blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(lastMiningNotify, initial);
-        byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
-        byte[] currentTarget = DifficultyUtil.calculateTarget(setDifficulty);
+                blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(lastMiningNotify, initial);
+                byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
+                byte[] currentTarget = DifficultyUtil.calculateTarget(setDifficulty);
 
-        nonceUtil = new NonceTimeUtil(lastMiningNotify.getCurrentTime());
-        BlockHeaderTemplateProducer blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(miningNotify, initial);
-        byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
-        startMining(blockHeaderTemplate, currentTarget, nonceUtil);
+                nonceUtil = new NonceTimeUtil(lastMiningNotify.getCurrentTime());
 
+                startMining(blockHeaderTemplate, currentTarget, nonceUtil);
+            } catch (DecoderException | IOException e) {
+                //incorrect data
+                LOG.log(Level.SEVERE, "Error", e);
+            } catch (NoSuchAlgorithmException e1) {
+                throw new RuntimeException(e1);
+            }
+        }
     }
 
     private boolean hasAllDataForMining() {
+        LOG.log(Level.INFO, "check all data");
         boolean hasInitial = (GlobalObjects.getInitialJsonString() != null);
-        boolean hasMiningNotifyJsonStrings = !(GlobalObjects.getMiningNotifyJsonStrings().isEmpty());
+        LOG.log(Level.INFO, "hasInitial: {0}", new Object[]{hasInitial});
+        boolean hasMiningNotifyJsonStrings = (GlobalObjects.getLastMiningNotifyJsonString() != null);
+        LOG.log(Level.INFO, "hasMiningNotifyJsonStrings: {0}", new Object[]{hasMiningNotifyJsonStrings});
         boolean hasSetDifficultyJsonString = (GlobalObjects.getSetDifficultyJsonString() != null);
+        LOG.log(Level.INFO, "hasSetDifficultyJsonString: {0}", new Object[]{hasSetDifficultyJsonString});
+
         return hasInitial && hasMiningNotifyJsonStrings && hasSetDifficultyJsonString;
     }
 
-    public void startMining(byte[] blockHeaderTemplate, byte[] currentTarget, NonceTimeUtil nonceUtil) {
+    /**
+     * start mining process
+     *
+     * @param blockHeaderTemplate
+     * @param currentTarget
+     * @param nonceUtil
+     * @return true if need get other job
+     */
+    public boolean startMining(byte[] blockHeaderTemplate, byte[] currentTarget, NonceTimeUtil nonceUtil) {
         LOG.log(Level.INFO, "--------------start mining---------------------");
         ForkJoinPool commonForkJoinPool = ForkJoinPool.commonPool();
         //TODO: add read data
@@ -83,6 +114,7 @@ public class MiningManager extends Thread {
         if (resultBlockHeader != null) {
             submitShare();
         }
+        return true;
     }
 
     private void submitShare() {

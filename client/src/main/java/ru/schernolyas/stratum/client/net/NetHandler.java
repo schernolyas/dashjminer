@@ -47,20 +47,25 @@ public class NetHandler implements Handler<AsyncResult<NetSocket>> {
                         socket.write(str2);
                         needWaitAnswer = false;
                     };
-
+                    
                     String[] commands = stringFromSocket.split("[\\n]+");
                     for (String command : commands) {
+                        LOG.log(Level.INFO, "processing command: {0}", new Object[]{command});
                         JsonObject object = new JsonObject(command);
                         if (object.containsKey("method")) {
                             String methodName = object.getString("method");
                             LOG.log(Level.INFO, "send message : {0} to listener: {1}", new Object[]{command,methodName});
                             eventBus.publish(methodName,command);
+                        } else if (object.containsKey("result")) {
+                            Integer id = object.getInteger("id");
+                            if (id==1) {
+                                //initial
+                                eventBus.publish(Consumers.INITIAL,command);
+                            }                            
                         }
-
                     }
-
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    LOG.log(Level.SEVERE, "ERROR", e);
                 }
             }
         };
@@ -68,7 +73,7 @@ public class NetHandler implements Handler<AsyncResult<NetSocket>> {
 
             @Override
             public void handle(Void e) {
-                System.out.println("Socket closed");
+                LOG.log(Level.INFO, "Socket close");
             }
         });
 

@@ -18,10 +18,10 @@ public class GlobalObjects {
     private static boolean testMode = false;
     private static String initialJsonString;
     private static String setDifficultyJsonString;
-    private static final LinkedList<String> miningNotifyJsonStrings = new LinkedList<>();
+    private static String lastMiningNotifyJsonString;
 
     public synchronized static void addNewMiningNotify(String jsonString) {
-        miningNotifyJsonStrings.addLast(jsonString);        
+        lastMiningNotifyJsonString=jsonString;        
     }
 
     public synchronized static void setInitial(String jsonString) {
@@ -40,8 +40,8 @@ public class GlobalObjects {
         return setDifficultyJsonString;
     }
 
-    public static LinkedList<String> getMiningNotifyJsonStrings() {
-        return miningNotifyJsonStrings;
+    public static String getLastMiningNotifyJsonString() {
+        return lastMiningNotifyJsonString;
     }
 
     public static boolean isTestMode() {

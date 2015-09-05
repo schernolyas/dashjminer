@@ -5,22 +5,17 @@
  */
 package ru.schernolyas.stratum.client;
 
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetClientOptions;
-import io.vertx.core.net.NetSocket;
-import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ru.schernolyas.stratum.client.minimg.GlobalObjects;
 import ru.schernolyas.stratum.client.minimg.MiningManager;
 import ru.schernolyas.stratum.client.net.Consumers;
-import ru.schernolyas.stratum.client.net.MediatorThread;
 import ru.schernolyas.stratum.client.net.NetHandler;
 
 /**
@@ -34,10 +29,14 @@ public class StratumClient {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         StratumClient m = new StratumClient();
-        m.start();
+        try {
+            m.start();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "ERROR", e);
+        }
 
     }
 
@@ -53,7 +52,7 @@ public class StratumClient {
 
         NetClient tcpClient = vertx.createNetClient(options);
         MiningManager miningManager = new MiningManager(eventBus);
-        miningManager.start();
+        
 
         eventBus.consumer(Consumers.NOTIFY, new Handler<Message<String>>() {
 
@@ -61,6 +60,14 @@ public class StratumClient {
             public void handle(Message<String> message) {
                 LOG.log(Level.INFO, "get message of type 'mining.notify': {0}", new Object[]{message.body()});
                 GlobalObjects.addNewMiningNotify(message.body());
+            }
+        });
+        eventBus.consumer(Consumers.INITIAL, new Handler<Message<String>>() {
+
+            @Override
+            public void handle(Message<String> message) {
+                LOG.log(Level.INFO, "get initial message : {0}", new Object[]{message.body()});
+                GlobalObjects.setInitial(message.body());
             }
         });
         eventBus.consumer(Consumers.SET_DIFFICULTY, new Handler<Message<String>>() {
@@ -72,8 +79,9 @@ public class StratumClient {
             }
         });
 
-        tcpClient.connect(16090, "mine3.coinmine.pl", new NetHandler(eventBus));
-
+        tcpClient.connect(16090, "mine3.coinmine.pl", new NetHandler(eventBus)); 
+        miningManager.start();
+        miningManager.join();
     }
 
 }
