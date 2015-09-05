@@ -23,10 +23,10 @@ public class NonceTimeUtil {
     private Long nTime;
     private AtomicLong nonce;
 
-    public NonceTimeUtil() throws DecoderException {
+    public NonceTimeUtil()  {
 
         this.nTime = getCurrentTime();
-        this.nonce = new AtomicLong(0L);
+        this.nonce = new AtomicLong(2000000L);
     }
 
     public NonceTimeUtil(byte[] nTime) throws DecoderException {
@@ -41,7 +41,7 @@ public class NonceTimeUtil {
     }
 
     public byte[] getNonce(boolean isTestMode) {
-        long currentNonceValue = isTestMode ? nonce.incrementAndGet() : nonce.get();
+        long currentNonceValue = isTestMode ?  nonce.get() : nonce.incrementAndGet();
         byte[] resultNonceBytes = new byte[]{0, 0, 0, 0};
         byte[] nonceIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(currentNonceValue).array();
         System.arraycopy(nonceIntBytes, 4, resultNonceBytes, 0, 4);

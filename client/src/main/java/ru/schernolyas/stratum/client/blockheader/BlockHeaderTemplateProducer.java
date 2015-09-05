@@ -15,8 +15,10 @@ import org.apache.commons.codec.binary.Hex;
 import ru.schernolyas.stratum.client.dto.BlockHeader;
 import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
+import ru.schernolyas.stratum.client.minimg.GlobalObjects;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.CoinBaseUtil;
+import ru.schernolyas.stratum.client.utils.MerkleTreeUtil;
 
 /**
  *
@@ -36,20 +38,25 @@ public class BlockHeaderTemplateProducer {
     
 
     public byte[] produceBlockHeaderTemplate() throws IOException, NoSuchAlgorithmException, DecoderException {
-        byte[] coinBase = CoinBaseUtil.produceCoinBase(miningNotify, initial);
+        
         MessageDigest sha256md = MessageDigest.getInstance("SHA-256");
         //http://thedestitutedeveloper.blogspot.ru/2014/03/stratum-mining-block-headers-worked.html
-        //byte[] doubleHashCoinBase = sha256md.digest(sha256md.digest(coinBase));
-        //byte[] finalMerkleRoot = MerkleTreeUtil.calculate(sha256md, doubleHashCoinBase, miningNotify.getMerkleBranches());
-        byte[] finalMerkleRoot = ByteUtils.swapOrder(Hex.decodeHex("43eb305e7a85ec9d27b3724dab6b2ede5111d54f4568a03d4181231fbd356e81".toCharArray()));
+        byte[] finalMerkleRoot =null;
+        if (GlobalObjects.isTestMode()) {
+            finalMerkleRoot = Hex.decodeHex("43eb305e7a85ec9d27b3724dab6b2ede5111d54f4568a03d4181231fbd356e81".toCharArray());
+        } else {
+            byte[] coinBase = CoinBaseUtil.produceCoinBase(miningNotify, initial);
+            byte[] doubleHashCoinBase = sha256md.digest(sha256md.digest(coinBase));
+            finalMerkleRoot = MerkleTreeUtil.calculate(sha256md, doubleHashCoinBase, miningNotify.getMerkleBranches());            
+        }
         LOG.log(Level.INFO, "finalMerkleRoot : {0}", new Object[]{Hex.encodeHexString(finalMerkleRoot)});
 
         BlockHeader blockHeader = new BlockHeader();
         blockHeader.setVersion(ByteUtils.littleEndian(miningNotify.getBlockVersion()));
         LOG.log(Level.INFO, "blockHeader.getVersion() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getVersion())});
-        blockHeader.setMerkleRoot(ByteUtils.littleEndian(ByteUtils.swapOrder(finalMerkleRoot)));
+        blockHeader.setMerkleRoot(finalMerkleRoot);
         LOG.log(Level.INFO, "blockHeader.getMerkleRoot() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getMerkleRoot())});
-        blockHeader.setPrevHash(ByteUtils.littleEndian(ByteUtils.swapOrder(miningNotify.getPreviousBlockHash())));
+        blockHeader.setPrevHash(miningNotify.getPreviousBlockHash());       
         LOG.log(Level.INFO, "blockHeader.getPrevHash() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getPrevHash())});
         blockHeader.setnBit(ByteUtils.littleEndian(miningNotify.getEncodedNetworkDifficulty()));
         LOG.log(Level.INFO, "blockHeader.getnBit() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnBit())});

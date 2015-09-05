@@ -5,10 +5,12 @@
  */
 package ru.schernolyas.stratum.client.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.Pipe;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -64,8 +66,8 @@ public class ByteUtils {
         int readBytes =readChannel.read(resultBuffer);
         return resultBuffer.array();
     }
-    /*
-    public  byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
+    
+    public static byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
         LOG.log(Level.INFO, "preparePrevHash in : {0}", new Object[]{Hex.encodeHexString(prevHashButes)});
         ByteArrayOutputStream baos = new ByteArrayOutputStream(32);
         for (int position=0;position<32;position+=4) {
@@ -77,5 +79,5 @@ public class ByteUtils {
         baos.flush();
         LOG.log(Level.INFO, "prepared PrevHash : {0}", new Object[]{Hex.encodeHexString(baos.toByteArray())});
         return baos.toByteArray();
-    } */
+    } 
 }

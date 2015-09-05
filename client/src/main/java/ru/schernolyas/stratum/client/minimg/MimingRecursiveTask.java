@@ -27,7 +27,8 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
 
     private static final Logger LOG = Logger.getLogger(MimingRecursiveTask.class.getName());
 
-    private static int GROUP_SIZE = Runtime.getRuntime().availableProcessors() * 2;
+    //private static final int GROUP_SIZE = Runtime.getRuntime().availableProcessors() * 2;
+    private static final int GROUP_SIZE =1;
     private boolean isManagerTask = true;
     private byte[] blockHeaderTemplate;
     private NonceTimeUtil nonceTimeUtil;
@@ -77,13 +78,13 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     }
 
     private boolean defineNeedRunNextIteration(byte[] result) {
-        boolean needRunNextIteration = true;
-        if (testCount==0) {
+        boolean needRunNextIteration = false;
+        /*if (testCount==0) {
             needRunNextIteration = true;
             testCount++;
         } else {
             needRunNextIteration = false;
-        }
+        } */
         return needRunNextIteration;
     }
     
@@ -113,6 +114,7 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
         LOG.log(Level.INFO, "block header candidate  : {0}", new Object[]{Hex.encodeHexString(blockHeaderCandidate)});
         byte[] x11Hash = X11Util.calculate(blockHeaderCandidate);
         byte[] littleEndianX11Hash = ByteUtils.littleEndian(x11Hash);
+        LOG.log(Level.INFO, "littleEndianX11Hash  : {0}", new Object[]{Hex.encodeHexString(littleEndianX11Hash)});
         //TODO: try to compare bytes to first value which not equals
         BigInteger littleEndianX11HashInt = ByteUtils.toBigInteger(littleEndianX11Hash);
         byte[] result = null;

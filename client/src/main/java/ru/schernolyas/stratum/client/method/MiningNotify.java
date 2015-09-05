@@ -58,6 +58,7 @@ public class MiningNotify {
             LOG.log(Level.INFO, "merkleBranche N {0} : {1}", new Object[]{i, Hex.encodeHexString(merkleBranche)});
         }
         miningNotify.setBlockVersion(Hex.decodeHex(paramsArray.getJsonString(5).getString().toCharArray()));
+        //miningNotify.setBlockVersion(new byte[]{0,0,0,2});
         LOG.log(Level.INFO, "blockVersion : {0}", new Object[]{Hex.encodeHexString(miningNotify.getBlockVersion())});
         miningNotify.setEncodedNetworkDifficulty(Hex.decodeHex(paramsArray.getJsonString(6).getString().toCharArray()));
         LOG.log(Level.INFO, "encodedNetworkDifficulty : {0}", new Object[]{Hex.encodeHexString(miningNotify.getEncodedNetworkDifficulty())});

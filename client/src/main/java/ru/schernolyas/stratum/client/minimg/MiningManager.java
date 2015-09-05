@@ -56,7 +56,9 @@ public class MiningManager extends Thread {
             } catch (InterruptedException e) {
             }
         }
-        while (true) {
+        nonceUtil = new NonceTimeUtil();
+        //while (true) {
+        for (int i=0;i<1;i++) {
             try {
                 //  has all data for mining. let's go
                 LOG.log(Level.INFO, "GlobalObjects.getInitialJsonString(): {0}", new Object[]{GlobalObjects.getInitialJsonString()});
@@ -71,7 +73,7 @@ public class MiningManager extends Thread {
                 byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
                 byte[] currentTarget = DifficultyUtil.calculateTarget(setDifficulty);
 
-                nonceUtil = new NonceTimeUtil(lastMiningNotify.getCurrentTime());
+                
 
                 startMining(blockHeaderTemplate, currentTarget, nonceUtil);
             } catch (DecoderException | IOException e) {
