@@ -27,8 +27,8 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
 
     private static final Logger LOG = Logger.getLogger(MimingRecursiveTask.class.getName());
 
-    //private static final int GROUP_SIZE = Runtime.getRuntime().availableProcessors() * 2;
-    private static final int GROUP_SIZE =1;
+    private static final int GROUP_SIZE = Runtime.getRuntime().availableProcessors() * 2;
+    //private static final int GROUP_SIZE =1;
     private boolean isManagerTask = true;
     private byte[] blockHeaderTemplate;
     private NonceTimeUtil nonceTimeUtil;

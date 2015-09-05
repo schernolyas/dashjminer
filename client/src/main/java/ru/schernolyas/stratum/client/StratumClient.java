@@ -9,6 +9,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetClientOptions;
 import java.util.logging.Level;
@@ -59,7 +61,10 @@ public class StratumClient {
             @Override
             public void handle(Message<String> message) {
                 LOG.log(Level.INFO, "get message of type 'mining.notify': {0}", new Object[]{message.body()});
-                GlobalObjects.addNewMiningNotify(message.body());
+                JsonObject object = new JsonObject(message.body());
+                JsonArray array = object.getJsonArray("params");
+                String jobId = array.getString(0);                
+                GlobalObjects.addNewMiningNotify(jobId,message.body());
             }
         });
         eventBus.consumer(Consumers.INITIAL, new Handler<Message<String>>() {

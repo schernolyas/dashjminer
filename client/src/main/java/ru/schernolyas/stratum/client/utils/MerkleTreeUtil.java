@@ -5,6 +5,7 @@
  */
 package ru.schernolyas.stratum.client.utils;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,20 +23,13 @@ public class MerkleTreeUtil {
      * @param doubleHashCoinBase sha256(sha256(CoinBase))
      * @param merkleBranches
      * @return 
+     * @throws java.io.IOException 
      */
-    public static byte[] calculate(MessageDigest md,byte[] doubleHashCoinBase,byte[][] merkleBranches) {
+    public static byte[] calculate(MessageDigest md,byte[] doubleHashCoinBase,byte[][] merkleBranches) throws IOException {
         
-        byte[] merkleRoot = new byte[32];
-        System.arraycopy(doubleHashCoinBase, 0, merkleRoot, 0, 32);
-        //LOG.log(Level.INFO, "digest : {0}", new Object[]{Hex.encodeHexString(merkleRoot)});
-        for (int i = 0; i < merkleBranches.length; i++) {
-            byte[] currentHash = new byte[64];
-            System.arraycopy(merkleRoot, 0, currentHash, 0, 32);
-          //  LOG.log(Level.INFO, "current merkleRoot : {0}; i: {1}", new Object[]{Hex.encodeHexString(merkleRoot),i});
-            byte[] currentMerkleBranche = merkleBranches[i];
-            System.arraycopy(currentMerkleBranche, 0, currentHash, 31, 32);
-            merkleRoot = md.digest(md.digest(currentHash));
-          //  LOG.log(Level.INFO, "merkleRoot : {0}; i: {1}", new Object[]{Hex.encodeHexString(merkleRoot),i});
+        byte[] merkleRoot = doubleHashCoinBase;
+        for (byte[] merkleBranche : merkleBranches) {
+            merkleRoot = md.digest(md.digest(ByteUtils.concat(merkleRoot, merkleBranche)));
         }
         return merkleRoot;
     }
