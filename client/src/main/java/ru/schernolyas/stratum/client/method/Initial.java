@@ -31,12 +31,14 @@ public class Initial {
         Initial initial = new Initial();
         JsonArray resultArray = jsonObject.getJsonArray("result");
         JsonArray array1 = resultArray.getJsonArray(0);
-        for (int i = 0; i < array1.size(); i++) {
-            JsonArray ar = array1.getJsonArray(i);
-            String name = ar.getString(0);
+        for (int i = 0; i < array1.size(); i=+2) {
+            
+           
+            String name = array1.getString(i);
+            String value = array1.getString(i+1);
             if (name.equalsIgnoreCase("mining.notify")) {
-                initial.setMiningNotify(Hex.decodeHex(ar.getString(1).toCharArray()));
-            }
+                initial.setMiningNotify(Hex.decodeHex(value.toCharArray()));
+            } 
         }
         LOG.log(Level.INFO, "miningNotify : {0}", new Object[]{Hex.encodeHexString(initial.getMiningNotify())});
         initial.setExtraNonce1(Hex.decodeHex(resultArray.getString(1).toCharArray()));

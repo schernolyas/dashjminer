@@ -23,7 +23,7 @@ import ru.schernolyas.stratum.client.StratumClient;
 public class NetHandler implements Handler<AsyncResult<NetSocket>> {
 
     private final String str1 = "{\"id\": 1, \"method\": \"mining.subscribe\", \"params\": []}\n";
-    private final String str2 = "{\"id\": 2, \"method\": \"mining.authorize\", \"params\": [\"********\",\"*****\"]}\n";
+    private final String str2 = "{\"id\": 2, \"method\": \"mining.authorize\", \"params\": [\"sergey461\",\"Sc27071977\"]}\n";
     private static final Logger LOG = Logger.getLogger(NetHandler.class.getName());
     private boolean needWaitAnswer = false;
     private EventBus eventBus;
