@@ -5,13 +5,11 @@
  */
 package ru.schernolyas.stratum.client.method;
 
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
@@ -35,15 +33,15 @@ public class Initial {
         JsonArray array1 = resultArray.getJsonArray(0);
         for (int i = 0; i < array1.size(); i++) {
             JsonArray ar = array1.getJsonArray(i);
-            String name = ar.getJsonString(0).getString();
+            String name = ar.getString(0);
             if (name.equalsIgnoreCase("mining.notify")) {
-                initial.setMiningNotify(Hex.decodeHex(ar.getJsonString(1).getString().toCharArray()));
+                initial.setMiningNotify(Hex.decodeHex(ar.getString(1).toCharArray()));
             }
         }
         LOG.log(Level.INFO, "miningNotify : {0}", new Object[]{Hex.encodeHexString(initial.getMiningNotify())});
-        initial.setExtraNonce1(Hex.decodeHex(resultArray.getJsonString(1).getString().toCharArray()));
+        initial.setExtraNonce1(Hex.decodeHex(resultArray.getString(1).toCharArray()));
         LOG.log(Level.INFO, "extraNonce1 : {0}", new Object[]{Hex.encodeHexString(initial.getExtraNonce1())});
-        initial.setExtraNonce2Size(resultArray.getInt(2));
+        initial.setExtraNonce2Size(resultArray.getInteger(2));
         LOG.log(Level.INFO, "extraNonce2Size : {0}", new Object[]{initial.getExtraNonce2Size()});
         return initial;
     }
@@ -80,9 +78,8 @@ public class Initial {
         this.extraNonce2Size = extraNonce2Size;
     }
 
-    public static Initial build(String jsonString) throws DecoderException {
-        JsonReader jsonReader = Json.createReader(new StringReader(jsonString));
-        JsonObject obj = jsonReader.readObject();
+    public static Initial build(String jsonString) throws DecoderException {        
+        JsonObject obj = new JsonObject(jsonString);
         return processJsonObject(obj);
     }
 

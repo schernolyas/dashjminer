@@ -28,8 +28,8 @@ public class BlockHeaderTemplateProducer {
 
     private static final Logger LOG = Logger.getLogger(BlockHeaderTemplateProducer.class.getName());
 
-    private MiningNotify miningNotify;
-    private Initial initial;
+    private final MiningNotify miningNotify;
+    private final Initial initial;
 
     public BlockHeaderTemplateProducer(MiningNotify miningNotify, Initial initial) {
         this.miningNotify = miningNotify;
@@ -43,7 +43,7 @@ public class BlockHeaderTemplateProducer {
         //http://thedestitutedeveloper.blogspot.ru/2014/03/stratum-mining-block-headers-worked.html
         byte[] finalMerkleRoot =null;
         if (GlobalObjects.isTestMode()) {
-            finalMerkleRoot = Hex.decodeHex("43eb305e7a85ec9d27b3724dab6b2ede5111d54f4568a03d4181231fbd356e81".toCharArray());
+            finalMerkleRoot = Hex.decodeHex("3bc7c57b4720ffcc57d909340900d0832a336b7774d6e190f1a31f7c08c99532".toCharArray());
         } else {
             byte[] coinBase = CoinBaseUtil.produceCoinBase(miningNotify, initial);
             byte[] doubleHashCoinBase = sha256md.digest(sha256md.digest(coinBase));

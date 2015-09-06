@@ -13,7 +13,9 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetClientOptions;
+import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import ru.schernolyas.stratum.client.minimg.GlobalObjects;
 import ru.schernolyas.stratum.client.minimg.MiningManager;
@@ -32,6 +34,11 @@ public class StratumClient {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        try {
+            LogManager.getLogManager().readConfiguration(StratumClient.class.getResourceAsStream("/logging.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         StratumClient m = new StratumClient();
         try {
@@ -54,7 +61,6 @@ public class StratumClient {
 
         NetClient tcpClient = vertx.createNetClient(options);
         MiningManager miningManager = new MiningManager(eventBus);
-        
 
         eventBus.consumer(Consumers.NOTIFY, new Handler<Message<String>>() {
 
@@ -63,8 +69,8 @@ public class StratumClient {
                 LOG.log(Level.INFO, "get message of type 'mining.notify': {0}", new Object[]{message.body()});
                 JsonObject object = new JsonObject(message.body());
                 JsonArray array = object.getJsonArray("params");
-                String jobId = array.getString(0);                
-                GlobalObjects.addNewMiningNotify(jobId,message.body());
+                String jobId = array.getString(0);
+                GlobalObjects.addNewMiningNotify(jobId, message.body());
             }
         });
         eventBus.consumer(Consumers.INITIAL, new Handler<Message<String>>() {
@@ -84,7 +90,7 @@ public class StratumClient {
             }
         });
 
-        tcpClient.connect(16090, "mine3.coinmine.pl", new NetHandler(eventBus)); 
+        tcpClient.connect(16090, "mine3.coinmine.pl", new NetHandler(eventBus));
         miningManager.start();
         miningManager.join();
     }

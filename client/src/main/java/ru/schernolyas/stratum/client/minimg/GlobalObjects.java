@@ -5,7 +5,6 @@
  */
 package ru.schernolyas.stratum.client.minimg;
 
-import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 

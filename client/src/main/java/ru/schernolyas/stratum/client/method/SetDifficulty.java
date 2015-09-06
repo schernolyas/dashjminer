@@ -5,14 +5,12 @@
  */
 package ru.schernolyas.stratum.client.method;
 
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
@@ -30,9 +28,9 @@ public class SetDifficulty {
     private static SetDifficulty processJsonObject(JsonObject jsonObject) throws DecoderException {
         SetDifficulty setDifficulty = new SetDifficulty();
         JsonArray paramsArray = jsonObject.getJsonArray("params");
-        setDifficulty.setDecimalDifficulty(paramsArray.getJsonNumber(0).bigDecimalValue());
+        setDifficulty.setDecimalDifficulty(new BigDecimal(paramsArray.getDouble(0)));
         LOG.log(Level.INFO, "current difficulty : 1) byte: {0}; 2) decimal: {1}; {2}",
-                    new Object[]{paramsArray.getJsonNumber(0).bigDecimalValue(),setDifficulty.getDecimalDifficulty(),
+                    new Object[]{paramsArray.getDouble(0),setDifficulty.getDecimalDifficulty(),
                     Math.getExponent(setDifficulty.getDecimalDifficulty().doubleValue())});
         String str = Integer.toHexString(Float.floatToRawIntBits(setDifficulty.getDecimalDifficulty().floatValue()));
         setDifficulty.setByteDifficulty(Hex.decodeHex(str.toCharArray()));
@@ -54,12 +52,10 @@ public class SetDifficulty {
     public void setDecimalDifficulty(BigDecimal decimalDifficulty) {
         this.decimalDifficulty = decimalDifficulty;
     }
-
+   
     
-    
-    public static SetDifficulty build(String jsonString) throws DecoderException {
-        JsonReader jsonReader = Json.createReader(new StringReader(jsonString));
-        JsonObject obj = jsonReader.readObject();
+    public static SetDifficulty build(String jsonString) throws DecoderException {        
+        JsonObject obj = new JsonObject(jsonString);
         return processJsonObject(obj);
     }
 

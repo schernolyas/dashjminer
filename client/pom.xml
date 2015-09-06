@@ -26,13 +26,6 @@
             <artifactId>cryptohash</artifactId>
             <version>3.0</version>
         </dependency>
-        <!-- todo: use vert.x JSON-->
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.0.2</version>
-            <type>jar</type>
-        </dependency>
         <!--Vertx provided dependencies -->
         <dependency>
             <groupId>io.vertx</groupId>
