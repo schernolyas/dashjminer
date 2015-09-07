@@ -5,6 +5,7 @@
  */
 package ru.schernolyas.stratum.client.method;
 
+import org.apache.commons.codec.binary.Hex;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -45,8 +46,16 @@ public class InitialTest {
     public void testBuild() throws Exception {
         System.out.println("build");
         String jsonString = " {\"error\": null, \"id\": 1, \"result\": [[\"mining.notify\", \"ae6812eb4cd7735a302a8a9dd95cf71f\"], \"f80079c5\", 4]}";
-        Initial expResult = null;
-        Initial result = Initial.build(jsonString);
+        Initial initial = Initial.build(jsonString);
+        assertNotNull("Must be not null", initial);
+        assertNotNull("Must be not null", initial.getMiningNotify());
+        assertArrayEquals(Hex.decodeHex("ae6812eb4cd7735a302a8a9dd95cf71f".toCharArray()), initial.getMiningNotify());
+        jsonString = "{\"id\":1,\"result\":[[[\"mining.set_difficulty\",\"deadbeefcafebabe26d60d0000000000\"],[\"mining.notify\",\"deadbeefcafebabe26d60d0000000000\"]],\"7ff90f57\",4],\"error\":null}";
+        initial = Initial.build(jsonString);
+        assertNotNull("Must be not null", initial);
+        assertNotNull("Must be not null", initial.getMiningNotify());
+        assertArrayEquals(Hex.decodeHex("deadbeefcafebabe26d60d0000000000".toCharArray()), initial.getMiningNotify());
+        
         
     }
     

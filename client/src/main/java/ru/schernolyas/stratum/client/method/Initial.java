@@ -7,7 +7,6 @@ package ru.schernolyas.stratum.client.method;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
@@ -26,19 +25,29 @@ public class Initial {
     private byte[] extraNonce1;
     private int extraNonce2Size;
 
-    
     private static Initial processJsonObject(JsonObject jsonObject) throws DecoderException {
         Initial initial = new Initial();
         JsonArray resultArray = jsonObject.getJsonArray("result");
         JsonArray array1 = resultArray.getJsonArray(0);
-        for (int i = 0; i < array1.size(); i=+2) {
-            
-           
-            String name = array1.getString(i);
-            String value = array1.getString(i+1);
-            if (name.equalsIgnoreCase("mining.notify")) {
-                initial.setMiningNotify(Hex.decodeHex(value.toCharArray()));
-            } 
+        boolean isMiningNotify = false;
+        for (int i = 0; i < array1.size(); i++) {
+            Class type = array1.getValue(i).getClass();
+            if (type.equals(JsonArray.class)) {
+                JsonArray arr1= array1.getJsonArray(i);
+                String name = arr1.getString(0);
+                String value = arr1.getString(1);
+                if (name.equalsIgnoreCase("mining.notify")) {
+                    initial.setMiningNotify(Hex.decodeHex(value.toCharArray()));
+                }
+            } else {
+                String stringValue = array1.getString(i);
+                if (stringValue.equalsIgnoreCase("mining.notify")) {
+                    isMiningNotify = true;
+                } else if (isMiningNotify) {
+                    initial.setMiningNotify(Hex.decodeHex(stringValue.toCharArray()));
+                    isMiningNotify = false;
+                }
+            }
         }
         LOG.log(Level.INFO, "miningNotify : {0}", new Object[]{Hex.encodeHexString(initial.getMiningNotify())});
         initial.setExtraNonce1(Hex.decodeHex(resultArray.getString(1).toCharArray()));
@@ -80,7 +89,7 @@ public class Initial {
         this.extraNonce2Size = extraNonce2Size;
     }
 
-    public static Initial build(String jsonString) throws DecoderException {        
+    public static Initial build(String jsonString) throws DecoderException {
         JsonObject obj = new JsonObject(jsonString);
         return processJsonObject(obj);
     }
