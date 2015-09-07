@@ -29,10 +29,10 @@ public class NewMain1 {
                     "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %4$-7s [%3$s] (%2$s) %5$s %6$s%n");
 
         try {
-            String host = "mine3.coinmine.pl";
-            int port = 16090; 
-            /*String host = "dash.coinobox.com";
-            int port = 7777; */
+            /*String host = "mine3.coinmine.pl";
+            int port = 16090; */
+            String host = "dash.coinobox.com";
+            int port = 7777; 
             Socket clientSocket = new Socket(host, port);
             clientSocket.setReceiveBufferSize(1024);
             clientSocket.setSendBufferSize(1024);
