@@ -7,9 +7,7 @@ package ru.schernolyas.stratum.client.utils;
 
 import java.io.IOException;
 import java.security.MessageDigest;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.codec.binary.Hex;
 
 /**
  *
