@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import ru.schernolyas.stratum.client.dto.BlockHeader;
+import ru.schernolyas.stratum.client.dto.BlockHeaderImpl;
 import ru.schernolyas.stratum.client.blockheader.BlockHeaderCandidateProducer;
 import ru.schernolyas.stratum.client.blockheader.BlockHeaderTemplateProducer;
 import ru.schernolyas.stratum.client.method.Initial;
@@ -24,7 +24,7 @@ import ru.schernolyas.stratum.client.minimg.MiningManager;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.CoinBaseUtil;
 import ru.schernolyas.stratum.client.utils.DifficultyUtil;
-import ru.schernolyas.stratum.client.utils.NonceTimeUtil;
+import ru.schernolyas.stratum.client.utils.NonceTimeHolderImpl;
 import ru.schernolyas.stratum.client.utils.X11Util;
 
 ;
@@ -71,8 +71,8 @@ public class NewMain {
             byte[] currentTarget = DifficultyUtil.calculateTarget(setDifficulty);
             LOG.log(Level.INFO, "currentTarget : {0}", new Object[]{Hex.encodeHexString(currentTarget)});
             long testNonceValue = 5628506L;
-            //NonceTimeUtil nonceUtil = new NonceTimeUtil(miningNotify.getCurrentTime(), testNonceValue);
-            NonceTimeUtil nonceUtil = new NonceTimeUtil(Hex.decodeHex(requiredTime.toCharArray()), testNonceValue);
+            //NonceTimeUtil nonceUtil = new NonceTimeHolderImpl(miningNotify.getCurrentTime(), testNonceValue);
+            NonceTimeHolderImpl nonceUtil = new NonceTimeHolderImpl(Hex.decodeHex(requiredTime.toCharArray()), testNonceValue);
 
             BlockHeaderTemplateProducer blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(miningNotify, initial);
             byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();

@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import ru.schernolyas.stratum.client.dto.BlockHeader;
+import ru.schernolyas.stratum.client.dto.BlockHeaderImpl;
 import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
 import ru.schernolyas.stratum.client.minimg.GlobalObjects;
@@ -51,7 +51,7 @@ public class BlockHeaderTemplateProducer {
         }
         LOG.log(Level.INFO, "finalMerkleRoot : {0}", new Object[]{Hex.encodeHexString(finalMerkleRoot)});
 
-        BlockHeader blockHeader = new BlockHeader();
+        BlockHeaderImpl blockHeader = new BlockHeaderImpl();
         blockHeader.setVersion(ByteUtils.littleEndian(miningNotify.getBlockVersion()));
         LOG.log(Level.INFO, "blockHeader.getVersion() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getVersion())});
         blockHeader.setMerkleRoot(finalMerkleRoot);

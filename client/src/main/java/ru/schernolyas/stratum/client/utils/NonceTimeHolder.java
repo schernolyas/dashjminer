@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.schernolyas.stratum.client.dto;
+package ru.schernolyas.stratum.client.utils;
 
 /**
  *
  * @author schernolyas
  */
-public interface BlockHeader {
+public interface NonceTimeHolder {
+    public byte[] getNTime();
+    public byte[] getNonce();
     
 }

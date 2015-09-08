@@ -9,32 +9,34 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
+import jdk.nashorn.internal.objects.Global;
 import org.apache.commons.codec.DecoderException;
+import ru.schernolyas.stratum.client.minimg.GlobalObjects;
 
 /**
  *
  * @author Sergey Chernolyas
  */
-public class NonceTimeUtil {
+public class NonceTimeHolderImpl implements NonceTimeHolder {
 
-    private static final Logger LOG = Logger.getLogger(NonceTimeUtil.class.getName());
+    private static final Logger LOG = Logger.getLogger(NonceTimeHolderImpl.class.getName());
     public static final long MAX_NONCE = 0xFFFFFFFF;
 
     private Long nTime;
     private AtomicLong nonce;
 
-    public NonceTimeUtil()  {
+    public NonceTimeHolderImpl()  {
 
         this.nTime = getCurrentTime();
         this.nonce = new AtomicLong(2000000L);
     }
 
-    public NonceTimeUtil(byte[] nTime) throws DecoderException {
+    public NonceTimeHolderImpl(byte[] nTime) throws DecoderException {
         this.nTime = new BigInteger(nTime).longValue();
         this.nonce = new AtomicLong(0L);
     }
 
-    public NonceTimeUtil(byte[] nTime, long startNonce) throws DecoderException {
+    public NonceTimeHolderImpl(byte[] nTime, long startNonce) throws DecoderException {
         this.nTime = new BigInteger(nTime).longValue();
         //5628506L
         this.nonce = new AtomicLong(startNonce);
@@ -55,6 +57,17 @@ public class NonceTimeUtil {
         System.arraycopy(nTimeIntBytes, 4, nTimeBytes, 0, 4);
         return nTimeBytes;
     }
+
+    @Override
+    public byte[] getNTime() {
+        return getNTime(GlobalObjects.isTestMode());
+    }
+
+    @Override
+    public byte[] getNonce() {
+        return getNonce(GlobalObjects.isTestMode());
+    }
+    
 
     private long getCurrentTime() {
         long miliseconds = System.currentTimeMillis();

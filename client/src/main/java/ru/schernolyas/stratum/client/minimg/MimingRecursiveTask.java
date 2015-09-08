@@ -16,7 +16,8 @@ import org.apache.commons.codec.binary.Hex;
 import ru.schernolyas.stratum.client.blockheader.BlockHeaderCandidateProducer;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.ClearJobsHolder;
-import ru.schernolyas.stratum.client.utils.NonceTimeUtil;
+import ru.schernolyas.stratum.client.utils.NonceTimeHolder;
+import ru.schernolyas.stratum.client.utils.NonceTimeHolderImpl;
 import ru.schernolyas.stratum.client.utils.X11Util;
 
 /**
@@ -31,20 +32,20 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     //private static final int GROUP_SIZE =1;
     private boolean isManagerTask = true;
     private byte[] blockHeaderTemplate;
-    private NonceTimeUtil nonceTimeUtil;
+    private NonceTimeHolder nonceTimeHolder;
     private byte[] currentTarget;
     private BigInteger currentTargetInt;
     private byte[] result;
     private BlockHeaderCandidateProducer blockHeaderCandidateProducer;
     private int testCount = 0;
 
-    public MimingRecursiveTask(boolean isManagerTask, byte[] blockHeaderTemplate, byte[] currentTarget,NonceTimeUtil nonceTimeUtil) {
+    public MimingRecursiveTask(boolean isManagerTask, byte[] blockHeaderTemplate, byte[] currentTarget,NonceTimeHolder nonceTimeHolder) {
         this.isManagerTask = isManagerTask;
         this.blockHeaderTemplate = blockHeaderTemplate;
         this.currentTarget = currentTarget;
-        this.nonceTimeUtil = nonceTimeUtil;
+        this.nonceTimeHolder = nonceTimeHolder;
         if (!this.isManagerTask) {
-            this.blockHeaderCandidateProducer = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeUtil);
+            this.blockHeaderCandidateProducer = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeHolder);
             this.currentTargetInt = ByteUtils.toBigInteger(currentTarget);
         }
     }
@@ -55,10 +56,11 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     }
 
     private byte[] managerCompute() {
-        long maxIteractions = NonceTimeUtil.MAX_NONCE;
+        long maxIteractions = NonceTimeHolderImpl.MAX_NONCE;
         
-        do {
-             LOG.log(Level.INFO, "start new iteraction");
+       // do {
+        for(int i=0;i<100000;i++) {
+            LOG.log(Level.INFO, "iteration  : {0}", new Object[]{i});
              List<MimingRecursiveTask> forks = createSubtasks();
             for (Iterator<MimingRecursiveTask> iterator = forks.iterator(); iterator.hasNext();) {
                 MimingRecursiveTask subtask = iterator.next();
@@ -71,8 +73,8 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
                     result = localResult;
                 }
             }
-
-        } while (defineNeedRunNextIteration(result));
+        }
+        //} while (defineNeedRunNextIteration(result));
         return result;
 
     }
@@ -103,7 +105,7 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     private List<MimingRecursiveTask> createSubtasks() {
         List<MimingRecursiveTask> subtasks = new ArrayList<>(GROUP_SIZE);
         for (int i = 0; i < GROUP_SIZE; i++) {
-            MimingRecursiveTask subtask = new MimingRecursiveTask(false, blockHeaderTemplate, currentTarget,nonceTimeUtil);
+            MimingRecursiveTask subtask = new MimingRecursiveTask(false, blockHeaderTemplate, currentTarget,nonceTimeHolder);
             subtasks.add(subtask);
         }
         return subtasks;

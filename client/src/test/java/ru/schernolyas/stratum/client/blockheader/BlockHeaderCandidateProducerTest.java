@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import ru.schernolyas.stratum.client.utils.NonceTimeUtil;
+import ru.schernolyas.stratum.client.utils.NonceTimeHolderImpl;
 
 /**
  *
@@ -54,7 +54,7 @@ public class BlockHeaderCandidateProducerTest {
         
         byte[] time = Hex.decodeHex("53bf3cd7".toCharArray());
         long startNonce = 0xFEDCBAFA-1;
-        NonceTimeUtil nonceTimeUtil = new NonceTimeUtil(time, startNonce);
+        NonceTimeHolderImpl nonceTimeUtil = new NonceTimeHolderImpl(time, startNonce);
         BlockHeaderCandidateProducer instance = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeUtil);
         byte[] actualResult = instance.produceBlockHeaderCandidate();
         System.out.println(Hex.encodeHexString(actualResult));
