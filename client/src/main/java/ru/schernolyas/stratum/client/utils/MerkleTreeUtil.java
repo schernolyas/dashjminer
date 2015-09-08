@@ -16,7 +16,16 @@ import java.util.logging.Logger;
 public class MerkleTreeUtil {
     private static final Logger LOG = Logger.getLogger(MerkleTreeUtil.class.getName());
     /**
-     * 
+     * <pre>
+     *{@code
+     * // Generate merkle root 
+     *	sha256d(merkle_root, sctx->job.coinbase, sctx->job.coinbase_size);
+     *	for (i = 0; i < sctx->job.merkle_count; i++) {
+     * 		memcpy(merkle_root + 32, sctx->job.merkle[i], 32);
+     *  		sha256d(merkle_root, merkle_root, 64);
+     * 	}
+     *}
+     *</pre>
      * @param md
      * @param doubleHashCoinBase sha256(sha256(CoinBase))
      * @param merkleBranches

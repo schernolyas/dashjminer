@@ -35,20 +35,15 @@ public class BlockHeaderTemplateProducer {
         this.miningNotify = miningNotify;
         this.initial = initial;
     }
-    
 
     public byte[] produceBlockHeaderTemplate() throws IOException, NoSuchAlgorithmException, DecoderException {
-        
+
         MessageDigest sha256md = MessageDigest.getInstance("SHA-256");
         //http://thedestitutedeveloper.blogspot.ru/2014/03/stratum-mining-block-headers-worked.html
-        byte[] finalMerkleRoot =null;
-        if (GlobalObjects.isTestMode()) {
-            finalMerkleRoot = Hex.decodeHex("3bc7c57b4720ffcc57d909340900d0832a336b7774d6e190f1a31f7c08c99532".toCharArray());
-        } else {
-            byte[] coinBase = CoinBaseUtil.produceCoinBase(miningNotify, initial);
-            byte[] doubleHashCoinBase = sha256md.digest(sha256md.digest(coinBase));
-            finalMerkleRoot = MerkleTreeUtil.calculate(sha256md, doubleHashCoinBase, miningNotify.getMerkleBranches());            
-        }
+        byte[] coinBase = CoinBaseUtil.produceCoinBase(miningNotify, initial);
+        byte[] doubleHashCoinBase = sha256md.digest(sha256md.digest(coinBase));
+        byte[] finalMerkleRoot = MerkleTreeUtil.calculate(sha256md, doubleHashCoinBase, miningNotify.getMerkleBranches());
+
         LOG.log(Level.INFO, "finalMerkleRoot : {0}", new Object[]{Hex.encodeHexString(finalMerkleRoot)});
 
         BlockHeaderImpl blockHeader = new BlockHeaderImpl();
@@ -56,7 +51,7 @@ public class BlockHeaderTemplateProducer {
         LOG.log(Level.INFO, "blockHeader.getVersion() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getVersion())});
         blockHeader.setMerkleRoot(finalMerkleRoot);
         LOG.log(Level.INFO, "blockHeader.getMerkleRoot() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getMerkleRoot())});
-        blockHeader.setPrevHash(miningNotify.getPreviousBlockHash());       
+        blockHeader.setPrevHash(miningNotify.getPreviousBlockHash());
         LOG.log(Level.INFO, "blockHeader.getPrevHash() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getPrevHash())});
         blockHeader.setnBit(ByteUtils.littleEndian(miningNotify.getEncodedNetworkDifficulty()));
         LOG.log(Level.INFO, "blockHeader.getnBit() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnBit())});

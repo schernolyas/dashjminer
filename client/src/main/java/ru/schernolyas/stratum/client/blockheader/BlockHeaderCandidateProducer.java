@@ -14,8 +14,8 @@ import ru.schernolyas.stratum.client.utils.NonceTimeHolder;
  */
 public class BlockHeaderCandidateProducer {
 
-    private static final int NONCE_POSITION = 4 + 32 + 32 + 4 + 4;
-    private static final int TIME_POSITION = 4 + 32 + 32;
+    public static final int NONCE_POSITION = 4 + 32 + 32 + 4 + 4;
+    public static final int TIME_POSITION = 4 + 32 + 32;
     private final byte[] blockHeaderTemplateCopy = new byte[80];
     private final NonceTimeHolder nonceTimeHolder;
 
