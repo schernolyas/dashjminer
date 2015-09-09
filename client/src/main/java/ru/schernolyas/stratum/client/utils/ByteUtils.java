@@ -38,6 +38,16 @@ public class ByteUtils {
         }
         return reversed;
     }
+    public static byte[] bigEndian(byte[] in)  {
+        byte[] reversed = new byte[in.length];
+        int reverse = in.length-1;
+        int forward = 0;
+        for (; reverse >= 0; reverse--) {
+            reversed[reverse]=in[forward];
+            forward++;
+        }
+        return reversed;
+    }
     /**
      * reverse bytes like hex symbols
      * @param in array of byte with hex data
