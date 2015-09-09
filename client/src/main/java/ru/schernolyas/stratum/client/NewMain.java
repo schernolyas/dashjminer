@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import ru.schernolyas.stratum.client.dto.BlockHeaderImpl;
 import ru.schernolyas.stratum.client.blockheader.BlockHeaderCandidateProducer;
 import ru.schernolyas.stratum.client.blockheader.BlockHeaderTemplateProducer;
 import ru.schernolyas.stratum.client.method.Initial;
@@ -22,7 +21,6 @@ import ru.schernolyas.stratum.client.method.SetDifficulty;
 import ru.schernolyas.stratum.client.minimg.GlobalObjects;
 import ru.schernolyas.stratum.client.minimg.MiningManager;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
-import ru.schernolyas.stratum.client.utils.CoinBaseUtil;
 import ru.schernolyas.stratum.client.utils.DifficultyUtil;
 import ru.schernolyas.stratum.client.utils.NonceTimeHolderImpl;
 import ru.schernolyas.stratum.client.utils.X11Util;
@@ -95,7 +93,7 @@ public class NewMain {
                     new Object[]{Hex.encodeHexString(currentTarget),
                         Hex.encodeHexString(ByteUtils.littleEndian(x11Hash))});
 
-        } catch (DecoderException | NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

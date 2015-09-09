@@ -28,7 +28,7 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
 
     private static final Logger LOG = Logger.getLogger(MimingRecursiveTask.class.getName());
 
-    public static final int GROUP_SIZE = Runtime.getRuntime().availableProcessors() * 2;
+    public static final int GROUP_SIZE = Runtime.getRuntime().availableProcessors() + 2;
     //private static final int GROUP_SIZE =1;
     private boolean isManagerTask = true;
     private byte[] blockHeaderTemplate;
@@ -38,28 +38,36 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     private BlockHeaderCandidateProducer blockHeaderCandidateProducer;
     private int testCount = 0;
 
-    public MimingRecursiveTask(boolean isManagerTask, byte[] blockHeaderTemplate, byte[] currentTarget,NonceTimeHolder nonceTimeHolder) {
+    public MimingRecursiveTask(boolean isManagerTask, byte[] blockHeaderTemplate, byte[] currentTarget, NonceTimeHolder nonceTimeHolder) {
         this.isManagerTask = isManagerTask;
         this.blockHeaderTemplate = blockHeaderTemplate;
         this.currentTarget = currentTarget;
         this.nonceTimeHolder = nonceTimeHolder;
         if (!this.isManagerTask) {
-            this.blockHeaderCandidateProducer = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeHolder);            
+            this.blockHeaderCandidateProducer = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeHolder);
         }
     }
 
     @Override
     protected byte[] compute() {
-        return isManagerTask ? managerCompute() : workerCompute();
+        byte[] computeResult = null;
+        try {
+            computeResult = isManagerTask ? managerCompute() : workerCompute();
+        } catch (Exception ex) {
+            Logger.getLogger(MimingRecursiveTask.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return computeResult;
     }
 
     private byte[] managerCompute() {
         long maxIteractions = NonceTimeHolderImpl.MAX_NONCE;
-        
-       // do {
-        for(int i=0;i<100000;i++) {
-            LOG.log(Level.INFO, "iteration  : {0}", new Object[]{i});
-             List<MimingRecursiveTask> forks = createSubtasks();
+        List<MimingRecursiveTask> forks = createSubtasks();
+        // do {
+        for (int i = 0; i < 100000; i++) {
+            if ((i % 10000) == 0) {
+                LOG.log(Level.INFO, "iteration  : {0}", new Object[]{i});
+            }
+
             for (Iterator<MimingRecursiveTask> iterator = forks.iterator(); iterator.hasNext();) {
                 MimingRecursiveTask subtask = iterator.next();
                 subtask.fork();
@@ -71,23 +79,30 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
                     result = localResult;
                 }
             }
+            reInit(forks);
         }
         //} while (defineNeedRunNextIteration(result));
         return result;
 
     }
 
+    private void reInit(List<MimingRecursiveTask> forks) {
+        for (MimingRecursiveTask fork : forks) {
+            fork.reinitialize();
+        }
+    }
+
     private boolean defineNeedRunNextIteration(byte[] result) {
         boolean needRunNextIteration = false;
         /*if (testCount==0) {
-            needRunNextIteration = true;
-            testCount++;
-        } else {
-            needRunNextIteration = false;
-        } */
+         needRunNextIteration = true;
+         testCount++;
+         } else {
+         needRunNextIteration = false;
+         } */
         return needRunNextIteration;
     }
-    
+
     private boolean __defineNeedRunNextIteration(byte[] result) {
         boolean needRunNextIteration = false;
         boolean needClearJobs = ClearJobsHolder.needClearJobs();
@@ -103,21 +118,21 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     private List<MimingRecursiveTask> createSubtasks() {
         List<MimingRecursiveTask> subtasks = new ArrayList<>(GROUP_SIZE);
         for (int i = 0; i < GROUP_SIZE; i++) {
-            MimingRecursiveTask subtask = new MimingRecursiveTask(false, blockHeaderTemplate, currentTarget,nonceTimeHolder);
+            MimingRecursiveTask subtask = new MimingRecursiveTask(false, blockHeaderTemplate, currentTarget, nonceTimeHolder);
             subtasks.add(subtask);
         }
         return subtasks;
     }
 
-    private byte[] workerCompute() {
+    private byte[] workerCompute() throws Exception {
         byte[] blockHeaderCandidate = blockHeaderCandidateProducer.produceBlockHeaderCandidate();
-        LOG.log(Level.INFO, "block header candidate  : {0}", new Object[]{Hex.encodeHexString(blockHeaderCandidate)});
+        //LOG.log(Level.INFO, "block header candidate  : {0}", new Object[]{Hex.encodeHexString(blockHeaderCandidate)});
         byte[] x11Hash = X11Util.calculate(blockHeaderCandidate);
         byte[] littleEndianX11Hash = ByteUtils.littleEndian(x11Hash);
-        LOG.log(Level.INFO, "littleEndianX11Hash  : {0}", new Object[]{Hex.encodeHexString(littleEndianX11Hash)});
-        
-        byte[] result = null;        
-        if (ByteUtils.fastCompare(currentTarget, littleEndianX11Hash)==1) {
+        //LOG.log(Level.INFO, "littleEndianX11Hash  : {0}", new Object[]{Hex.encodeHexString(littleEndianX11Hash)});
+
+        byte[] result = null;
+        if (ByteUtils.fastCompare(currentTarget, littleEndianX11Hash) == 1) {
             result = blockHeaderCandidate;
         }
         return result;
