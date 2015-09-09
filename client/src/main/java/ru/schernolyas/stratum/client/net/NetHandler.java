@@ -55,12 +55,12 @@ public class NetHandler implements Handler<AsyncResult<NetSocket>> {
                         if (object.containsKey("method")) {
                             String methodName = object.getString("method");
                             LOG.log(Level.INFO, "send message : {0} to listener: {1}", new Object[]{command,methodName});
-                            eventBus.publish(methodName,command);
+                            eventBus.send(methodName,command);
                         } else if (object.containsKey("result")) {
                             Integer id = object.getInteger("id");
                             if (id==1) {
                                 //initial
-                                eventBus.publish(Consumers.INITIAL,command);
+                                eventBus.send(Consumers.INITIAL,command);
                             }                            
                         }
                     }
