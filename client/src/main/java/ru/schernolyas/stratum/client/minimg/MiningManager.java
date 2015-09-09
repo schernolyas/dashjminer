@@ -25,6 +25,7 @@ import ru.schernolyas.stratum.client.utils.NonceTimeHolderImpl;
  *
  * @author schernolyas
  */
+@Deprecated
 public class MiningManager extends Thread {
 
     private static final Logger LOG = Logger.getLogger(MiningManager.class.getName());
