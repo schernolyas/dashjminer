@@ -21,8 +21,7 @@ public class CubeHash512Factory extends BasePooledObjectFactory<CubeHash512> {
     private static final Logger LOG = Logger.getLogger(CubeHash512Factory.class.getName());
     
     @Override
-    public CubeHash512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public CubeHash512 create() throws Exception {
         return new CubeHash512();
     }
 

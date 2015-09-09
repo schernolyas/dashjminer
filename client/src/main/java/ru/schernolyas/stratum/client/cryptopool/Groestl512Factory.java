@@ -20,8 +20,7 @@ public class Groestl512Factory extends BasePooledObjectFactory<Groestl512> {
     private static final Logger LOG = Logger.getLogger(Groestl512Factory.class.getName());
     
     @Override
-    public Groestl512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public Groestl512 create() throws Exception { 
         return new Groestl512();
     }
 

@@ -20,8 +20,7 @@ class Blake512Factory extends BasePooledObjectFactory<BLAKE512> {
     private static final Logger LOG = Logger.getLogger(Blake512Factory.class.getName());
     
     @Override
-    public BLAKE512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public BLAKE512 create() throws Exception { 
         return new BLAKE512();
     }
 

@@ -20,8 +20,7 @@ public class Echo512Factory extends BasePooledObjectFactory<ECHO512> {
     private static final Logger LOG = Logger.getLogger(Echo512Factory.class.getName());
     
     @Override
-    public ECHO512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public ECHO512 create() throws Exception { 
         return new ECHO512();
     }
 

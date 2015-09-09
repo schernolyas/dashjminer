@@ -21,8 +21,7 @@ public class Keccak512Factory extends BasePooledObjectFactory<Keccak512> {
     private static final Logger LOG = Logger.getLogger(Keccak512Factory.class.getName());
     
     @Override
-    public Keccak512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public Keccak512 create() throws Exception { 
         return new Keccak512();
     }
 

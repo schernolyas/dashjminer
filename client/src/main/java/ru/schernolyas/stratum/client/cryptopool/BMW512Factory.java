@@ -20,8 +20,7 @@ class BMW512Factory extends BasePooledObjectFactory<BMW512> {
     private static final Logger LOG = Logger.getLogger(BMW512Factory.class.getName());
     
     @Override
-    public BMW512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public BMW512 create() throws Exception {  
         return new BMW512();
     }
 

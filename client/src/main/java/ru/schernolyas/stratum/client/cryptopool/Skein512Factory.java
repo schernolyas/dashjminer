@@ -20,8 +20,7 @@ public class Skein512Factory extends BasePooledObjectFactory<Skein512> {
     private static final Logger LOG = Logger.getLogger(Skein512Factory.class.getName());
     
     @Override
-    public Skein512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public Skein512 create() throws Exception { 
         return new Skein512();
     }
 

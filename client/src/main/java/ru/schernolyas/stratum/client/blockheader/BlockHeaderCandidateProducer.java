@@ -42,7 +42,6 @@ public class BlockHeaderCandidateProducer {
         System.arraycopy(littleEndianTime, 0, blockHeaderTemplateCopy, TIME_POSITION, 4);
         System.arraycopy(littleEndianNonce, 0, blockHeaderTemplateCopy, NONCE_POSITION, 4);
         return blockHeaderTemplateCopy;
-
     }
 
 }

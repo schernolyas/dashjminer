@@ -20,8 +20,7 @@ public class Simd512Factory extends BasePooledObjectFactory<SIMD512> {
     private static final Logger LOG = Logger.getLogger(Simd512Factory.class.getName());
     
     @Override
-    public SIMD512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public SIMD512 create() throws Exception { 
         return new SIMD512();
     }
 

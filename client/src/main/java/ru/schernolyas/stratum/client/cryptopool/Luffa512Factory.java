@@ -21,8 +21,7 @@ public class Luffa512Factory extends BasePooledObjectFactory<Luffa512> {
     private static final Logger LOG = Logger.getLogger(Luffa512Factory.class.getName());
     
     @Override
-    public Luffa512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public Luffa512 create() throws Exception {  
         return new Luffa512();
     }
 

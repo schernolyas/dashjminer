@@ -6,8 +6,6 @@
 package ru.schernolyas.stratum.client.cryptopool;
 
 import fr.cryptohash.JH512;
-import fr.cryptohash.Skein512;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -21,8 +19,7 @@ public class JH512Factory extends BasePooledObjectFactory<JH512> {
     private static final Logger LOG = Logger.getLogger(JH512Factory.class.getName());
     
     @Override
-    public JH512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public JH512 create() throws Exception { 
         return new JH512();
     }
 

@@ -20,8 +20,7 @@ public class SHAvite512Factory extends BasePooledObjectFactory<SHAvite512> {
     private static final Logger LOG = Logger.getLogger(SHAvite512Factory.class.getName());
     
     @Override
-    public SHAvite512 create() throws Exception {        
-        LOG.log(Level.INFO, "create object");
+    public SHAvite512 create() throws Exception {
         return new SHAvite512();
     }
 
