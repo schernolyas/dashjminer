@@ -74,6 +74,8 @@ public class X11Util {
         hash = cubeHash512.digest(hash);
         cubeHash512Pool.returnObject(cubeHash512);
         //  LOG.log(Level.INFO, "CubeHash512 : {0}", new Object[]{Hex.encodeHexString(hash)});
+        
+        
         hash = new fr.cryptohash.SHAvite512().digest(hash);
         //  LOG.log(Level.INFO, "SHAvite512 : {0}", new Object[]{Hex.encodeHexString(hash)});
         hash = new fr.cryptohash.SIMD512().digest(hash);
