@@ -117,7 +117,7 @@ public class MiningManager extends Thread {
         MimingRecursiveTask mimingRecursiveTask = new MimingRecursiveTask(true, blockHeaderTemplate, currentTarget, nonceUtil);
         byte[] resultBlockHeader = commonForkJoinPool.invoke(mimingRecursiveTask);
         long stop = System.currentTimeMillis();
-        LOG.log(Level.INFO, "duration: {0}; speed: {1}", new Object[]{stop-start,4*2*100000/((stop-start)/1000)});
+        LOG.log(Level.INFO, "duration: {0} milisec; speed: {1}", new Object[]{stop-start,MimingRecursiveTask.GROUP_SIZE*100000/((stop-start)/1000)});
         LOG.log(Level.INFO, "block header  : {0}",
                 new Object[]{resultBlockHeader != null ? Hex.encodeHexString(resultBlockHeader) : "null"});
         if (resultBlockHeader != null) {

@@ -21,7 +21,7 @@ import org.apache.commons.codec.binary.Hex;
  */
 public class ByteUtils {
     private static final Logger LOG = Logger.getLogger(ByteUtils.class.getName());
-    private static final ByteUtils  INCTANCE = new ByteUtils();
+  
     /**
      * 
      * @param in
@@ -66,6 +66,27 @@ public class ByteUtils {
         int readBytes =readChannel.read(resultBuffer);
         return resultBuffer.array();
     }
+    /**
+     * 
+     * @param array1
+     * @param array2
+     * @return 1 if array1>array2, 0 if array1=array2 and -1 if array1<array2
+     */
+    
+    public static int fastCompare(byte[] array1,byte[] array2 )  {
+        int result = 0;
+        for (int index=0;(index<array1.length && result==0);index++) {
+            boolean greater = (array1[index]>array2[index]);
+            boolean less = (array1[index]<array2[index]);
+            if (greater) {
+                result=1;
+            } else if (less)  {
+                result=-1;
+            }
+        }
+        return result;
+    }
+    
     
     public static byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
         LOG.log(Level.INFO, "preparePrevHash in : {0}", new Object[]{Hex.encodeHexString(prevHashButes)});

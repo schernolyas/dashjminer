@@ -55,11 +55,18 @@ public class ByteUtilsTest {
         System.out.println("result :"+Hex.encodeHexString(result));
         assertArrayEquals(expResult, result);
     }
-    /**
-     * Test of littleEndian method, of class ByteUtils.
-     * @throws org.apache.commons.codec.DecoderException
-     * @throws java.io.IOException
-     */
+    
+    @Test
+    public void testFastCompare() throws IOException {
+        System.out.println("fastCompare");
+        byte[] array1 = new byte[]{0,0,0,2,1};
+        byte[] array2 = new byte[]{0,0,0,0,9};
+        assertEquals(1L, ByteUtils.fastCompare(array1, array2));
+        array2 = new byte[]{0,0,0,2,1};
+        array1 = new byte[]{0,0,0,0,9};
+        assertEquals(-1L, ByteUtils.fastCompare(array1, array2));
+    }
+   
     @Test
     public void testSwapOrder() throws DecoderException, IOException {
         System.out.println("swapOrder");

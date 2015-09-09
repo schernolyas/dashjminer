@@ -48,13 +48,13 @@ public class BlockHeaderTemplateProducer {
 
         BlockHeaderImpl blockHeader = new BlockHeaderImpl();
         blockHeader.setVersion(ByteUtils.littleEndian(miningNotify.getBlockVersion()));
-        LOG.log(Level.INFO, "blockHeader.getVersion() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getVersion())});
+        //LOG.log(Level.INFO, "blockHeader.getVersion() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getVersion())});
         blockHeader.setMerkleRoot(finalMerkleRoot);
-        LOG.log(Level.INFO, "blockHeader.getMerkleRoot() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getMerkleRoot())});
+       // LOG.log(Level.INFO, "blockHeader.getMerkleRoot() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getMerkleRoot())});
         blockHeader.setPrevHash(miningNotify.getPreviousBlockHash());
-        LOG.log(Level.INFO, "blockHeader.getPrevHash() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getPrevHash())});
+        //LOG.log(Level.INFO, "blockHeader.getPrevHash() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getPrevHash())});
         blockHeader.setnBit(ByteUtils.littleEndian(miningNotify.getEncodedNetworkDifficulty()));
-        LOG.log(Level.INFO, "blockHeader.getnBit() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnBit())});
+        //LOG.log(Level.INFO, "blockHeader.getnBit() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getnBit())});
 
         return blockHeader.toBlockHeader();
     }

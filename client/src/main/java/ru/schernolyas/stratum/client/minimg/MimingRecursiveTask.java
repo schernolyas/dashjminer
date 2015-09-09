@@ -28,13 +28,12 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
 
     private static final Logger LOG = Logger.getLogger(MimingRecursiveTask.class.getName());
 
-    private static final int GROUP_SIZE = Runtime.getRuntime().availableProcessors() * 2;
+    public static final int GROUP_SIZE = Runtime.getRuntime().availableProcessors() * 2;
     //private static final int GROUP_SIZE =1;
     private boolean isManagerTask = true;
     private byte[] blockHeaderTemplate;
     private NonceTimeHolder nonceTimeHolder;
     private byte[] currentTarget;
-    private BigInteger currentTargetInt;
     private byte[] result;
     private BlockHeaderCandidateProducer blockHeaderCandidateProducer;
     private int testCount = 0;
@@ -45,8 +44,7 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
         this.currentTarget = currentTarget;
         this.nonceTimeHolder = nonceTimeHolder;
         if (!this.isManagerTask) {
-            this.blockHeaderCandidateProducer = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeHolder);
-            this.currentTargetInt = ByteUtils.toBigInteger(currentTarget);
+            this.blockHeaderCandidateProducer = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeHolder);            
         }
     }
 
@@ -117,10 +115,9 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
         byte[] x11Hash = X11Util.calculate(blockHeaderCandidate);
         byte[] littleEndianX11Hash = ByteUtils.littleEndian(x11Hash);
         LOG.log(Level.INFO, "littleEndianX11Hash  : {0}", new Object[]{Hex.encodeHexString(littleEndianX11Hash)});
-        //TODO: try to compare bytes to first value which not equals
-        BigInteger littleEndianX11HashInt = ByteUtils.toBigInteger(littleEndianX11Hash);
-        byte[] result = null;
-        if (currentTargetInt.compareTo(littleEndianX11HashInt) == 1) {
+        
+        byte[] result = null;        
+        if (ByteUtils.fastCompare(currentTarget, littleEndianX11Hash)==1) {
             result = blockHeaderCandidate;
         }
         return result;

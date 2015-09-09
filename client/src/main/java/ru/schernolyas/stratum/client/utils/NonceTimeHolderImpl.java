@@ -27,8 +27,8 @@ public class NonceTimeHolderImpl implements NonceTimeHolder {
 
     public NonceTimeHolderImpl()  {
 
-        this.nTime = getCurrentTime();
-        this.nonce = new AtomicLong(2000000L);
+        this.nTime = getCurrentTimeInSeconds();
+        this.nonce = new AtomicLong(0L);
     }
 
     public NonceTimeHolderImpl(byte[] nTime) throws DecoderException {
@@ -42,34 +42,24 @@ public class NonceTimeHolderImpl implements NonceTimeHolder {
         this.nonce = new AtomicLong(startNonce);
     }
 
-    public byte[] getNonce(boolean isTestMode) {
-        long currentNonceValue = isTestMode ?  nonce.get() : nonce.incrementAndGet();
+    @Override
+    public byte[] getNonce() {
         byte[] resultNonceBytes = new byte[]{0, 0, 0, 0};
-        byte[] nonceIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(currentNonceValue).array();
+        byte[] nonceIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(nonce.incrementAndGet()).array();
         System.arraycopy(nonceIntBytes, 4, resultNonceBytes, 0, 4);
         return resultNonceBytes;
     }
 
-    public byte[] getNTime(boolean isTestMode) {
+    @Override
+    public byte[] getNTime() {
         byte[] nTimeBytes = new byte[]{0, 0, 0, 0};
         byte[] nTimeIntBytes = ByteBuffer.allocate(Long.BYTES).
-                putLong(isTestMode ? nTime : getCurrentTime()).array();
+                putLong(getCurrentTimeInSeconds()).array();
         System.arraycopy(nTimeIntBytes, 4, nTimeBytes, 0, 4);
         return nTimeBytes;
     }
 
-    @Override
-    public byte[] getNTime() {
-        return getNTime(GlobalObjects.isTestMode());
-    }
-
-    @Override
-    public byte[] getNonce() {
-        return getNonce(GlobalObjects.isTestMode());
-    }
-    
-
-    private long getCurrentTime() {
+    private long getCurrentTimeInSeconds() {
         long miliseconds = System.currentTimeMillis();
         long seconds = miliseconds / 1000;
         return seconds;
