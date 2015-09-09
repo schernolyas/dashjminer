@@ -8,10 +8,13 @@ package ru.schernolyas.stratum.client.utils;
 import fr.cryptohash.BLAKE512;
 import fr.cryptohash.BMW512;
 import fr.cryptohash.CubeHash512;
+import fr.cryptohash.ECHO512;
 import fr.cryptohash.Groestl512;
 import fr.cryptohash.JH512;
 import fr.cryptohash.Keccak512;
 import fr.cryptohash.Luffa512;
+import fr.cryptohash.SHAvite512;
+import fr.cryptohash.SIMD512;
 import fr.cryptohash.Skein512;
 import java.util.logging.Logger;
 import org.apache.commons.pool2.ObjectPool;
@@ -67,20 +70,31 @@ public class X11Util {
         Luffa512 luffa512 = luffa512Pool.borrowObject();
         hash = luffa512.digest(hash);
         luffa512Pool.returnObject(luffa512);
-
         //  LOG.log(Level.INFO, "Luffa512 : {0}", new Object[]{Hex.encodeHexString(hash)});
+        
         ObjectPool<CubeHash512> cubeHash512Pool = CryptoPool.getCubeHash512Pool();
         CubeHash512 cubeHash512 = cubeHash512Pool.borrowObject();
         hash = cubeHash512.digest(hash);
         cubeHash512Pool.returnObject(cubeHash512);
         //  LOG.log(Level.INFO, "CubeHash512 : {0}", new Object[]{Hex.encodeHexString(hash)});
         
-        
-        hash = new fr.cryptohash.SHAvite512().digest(hash);
+        ObjectPool<SHAvite512> shavite512Pool = CryptoPool.getSHAvite512Pool();
+        SHAvite512 shavite512 = shavite512Pool.borrowObject();
+        hash = shavite512.digest(hash);
+        shavite512Pool.returnObject(shavite512);
         //  LOG.log(Level.INFO, "SHAvite512 : {0}", new Object[]{Hex.encodeHexString(hash)});
-        hash = new fr.cryptohash.SIMD512().digest(hash);
+        
+        ObjectPool<SIMD512> simd512Pool = CryptoPool.getSimd512Pool();
+        SIMD512 simd512 = simd512Pool.borrowObject();
+        hash = simd512.digest(hash);
+        simd512Pool.returnObject(simd512);
         //  LOG.log(Level.INFO, "SIMD512 : {0}", new Object[]{Hex.encodeHexString(hash)});
-        hash = new fr.cryptohash.ECHO512().digest(hash);
+        
+        ObjectPool<ECHO512> echo512Pool = CryptoPool.getEcho512Pool();
+        ECHO512 echo512 = echo512Pool.borrowObject();
+        hash = echo512.digest(hash);
+        echo512Pool.returnObject(echo512);
+        
         //  LOG.log(Level.INFO, "ECHO512 : {0}", new Object[]{Hex.encodeHexString(hash)});
         byte[] resultHash = new byte[32];
         System.arraycopy(hash, 0, resultHash, 0, 32);

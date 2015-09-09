@@ -8,10 +8,13 @@ package ru.schernolyas.stratum.client.cryptopool;
 import fr.cryptohash.BLAKE512;
 import fr.cryptohash.BMW512;
 import fr.cryptohash.CubeHash512;
+import fr.cryptohash.ECHO512;
 import fr.cryptohash.Groestl512;
 import fr.cryptohash.JH512;
 import fr.cryptohash.Keccak512;
 import fr.cryptohash.Luffa512;
+import fr.cryptohash.SHAvite512;
+import fr.cryptohash.SIMD512;
 import fr.cryptohash.Skein512;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +41,9 @@ public class CryptoPool {
     private final static GenericObjectPool<Keccak512> KECCAK512_POOL;
     private final static GenericObjectPool<Luffa512> LUFFA512_POOL;
     private final static GenericObjectPool<CubeHash512> CUBE_HASH_512_POOL;
+    private final static GenericObjectPool<SHAvite512> SHA_VITE_512_POOL;
+    private final static GenericObjectPool<SIMD512> SIMD_512_POOL;
+    private final static GenericObjectPool<ECHO512> ECHO_512_POOL;
 
     static {
         GenericObjectPoolConfig config = new GenericObjectPoolConfig();
@@ -51,6 +57,9 @@ public class CryptoPool {
         KECCAK512_POOL = new GenericObjectPool<>(new Keccak512Factory(), POOL_CONFIG);
         LUFFA512_POOL = new GenericObjectPool<>(new Luffa512Factory(), POOL_CONFIG);
         CUBE_HASH_512_POOL = new GenericObjectPool<>(new CubeHash512Factory(), POOL_CONFIG);
+        SHA_VITE_512_POOL = new GenericObjectPool<>(new SHAvite512Factory(),POOL_CONFIG);
+        SIMD_512_POOL = new GenericObjectPool<>(new Simd512Factory(),POOL_CONFIG);
+        ECHO_512_POOL = new GenericObjectPool<>(new Echo512Factory(),POOL_CONFIG);
 
         LOG.log(Level.INFO, "pools created");
 
@@ -86,6 +95,18 @@ public class CryptoPool {
     
     public static ObjectPool<CubeHash512> getCubeHash512Pool() {
         return CUBE_HASH_512_POOL;
+    }
+    
+    public static ObjectPool<SHAvite512> getSHAvite512Pool() {
+        return SHA_VITE_512_POOL;
+    }
+    
+    public static ObjectPool<SIMD512> getSimd512Pool() {
+        return SIMD_512_POOL;
+    }
+    
+    public static ObjectPool<ECHO512> getEcho512Pool() {
+        return ECHO_512_POOL;
     }
 
 }
