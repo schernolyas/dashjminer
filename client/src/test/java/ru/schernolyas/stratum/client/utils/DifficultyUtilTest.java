@@ -6,6 +6,7 @@
 package ru.schernolyas.stratum.client.utils;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.codec.binary.Hex;
@@ -65,6 +66,16 @@ public class DifficultyUtilTest {
         result = DifficultyUtil.calculateTarget(decimalDifficulty);
         //assertArrayEquals(expResult, result);
         System.out.println(Hex.encodeHexString(result));
+        
+        //calculate https://bitcoin.org/en/developer-reference#target-nbits
+        String stratumNBits = "1b18679a";
+        String mantissa = "18679a";
+        int mantissaByteCount = 3;
+        int exponent = 0x1b;
+        BigInteger target = new BigInteger(mantissa,16).multiply(new BigInteger("256",10).pow(exponent-mantissaByteCount));
+        System.out.println("target: "+target.toString(16));
+        
+        
     }
 
 }

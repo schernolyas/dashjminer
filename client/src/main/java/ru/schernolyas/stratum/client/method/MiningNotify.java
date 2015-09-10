@@ -7,7 +7,6 @@ package ru.schernolyas.stratum.client.method;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

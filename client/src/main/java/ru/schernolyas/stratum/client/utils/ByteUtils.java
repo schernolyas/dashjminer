@@ -10,14 +10,16 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.Pipe;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
 /**
  *
- * @author Сергей
+ * @author Sergey Chernolyas
  */
 public class ByteUtils {
     private static final Logger LOG = Logger.getLogger(ByteUtils.class.getName());
@@ -49,13 +51,14 @@ public class ByteUtils {
         return reversed;
     }
     /**
+     * TODO: redevelop!!!!
      * reverse bytes like hex symbols
      * @param in array of byte with hex data
-     * @return retult
+     * @return result
      * @throws DecoderException  if hex data is incorrect
      */
     
-    public static byte[] swapOrder(byte[] in) throws DecoderException  {      
+    public static byte[] swapOrder(byte[] in) throws DecoderException  {   
         StringBuilder builder = new StringBuilder(Hex.encodeHexString(in)).reverse();        
         return Hex.decodeHex(builder.toString().toCharArray());
     }
@@ -97,7 +100,15 @@ public class ByteUtils {
         return result;
     }
     
+    public static byte[] extend(byte[] array, int size) {
+        byte[] resultArray = new byte[size];    
+        Arrays.fill(resultArray, 0, (size-array.length), (byte)0);
+        System.arraycopy(array, 0, resultArray, (size-array.length), array.length);
+        return resultArray;
+    }
     
+    
+    @Deprecated
     public static byte[] preparePrevHash(byte[] prevHashButes) throws IOException  {
         LOG.log(Level.INFO, "preparePrevHash in : {0}", new Object[]{Hex.encodeHexString(prevHashButes)});
         ByteArrayOutputStream baos = new ByteArrayOutputStream(32);

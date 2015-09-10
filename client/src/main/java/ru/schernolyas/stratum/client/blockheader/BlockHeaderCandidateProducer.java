@@ -10,6 +10,7 @@ import ru.schernolyas.stratum.client.utils.NonceTimeHolder;
 
 /**
  * Class for produce Block Header candidate
+ *
  * @author schernolyas
  */
 public class BlockHeaderCandidateProducer {
@@ -27,8 +28,14 @@ public class BlockHeaderCandidateProducer {
      * @param nonceTimeHolder initialized util
      */
     public BlockHeaderCandidateProducer(byte[] blockHeaderTemplateBytes, NonceTimeHolder nonceTimeHolder) {
-        System.arraycopy(blockHeaderTemplateBytes, 0, blockHeaderTemplateCopy, 0, 80);
+        System.arraycopy(blockHeaderTemplateBytes, 0, this.blockHeaderTemplateCopy, 0, 80);
         this.nonceTimeHolder = nonceTimeHolder;
+    }
+
+    public void updateBlockTemplate(byte[] blockHeaderTemplateBytes) {
+        synchronized (this.blockHeaderTemplateCopy) {
+            System.arraycopy(blockHeaderTemplateBytes, 0, this.blockHeaderTemplateCopy, 0, 80);
+        }
     }
 
     /**

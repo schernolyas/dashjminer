@@ -86,10 +86,15 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
 
     }
 
+    private void updateBlockHeaderTemplate() {
+    //check new version of mining.notify for current jobId
+
+    }
+
     private void reInit(List<MimingRecursiveTask> forks) {
-        for (MimingRecursiveTask fork : forks) {
+        forks.parallelStream().forEach((fork) -> {
             fork.reinitialize();
-        }
+        });
     }
 
     private boolean defineNeedRunNextIteration(byte[] result) {

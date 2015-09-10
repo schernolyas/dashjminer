@@ -13,12 +13,14 @@ import org.apache.commons.codec.binary.Hex;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
+import ru.schernolyas.stratum.client.utils.DifficultyUtil;
 import ru.schernolyas.stratum.client.utils.NonceTimeHolder;
 import ru.schernolyas.stratum.client.utils.X11Util;
 
@@ -58,6 +60,9 @@ public class ComplexBlockHeaderTest {
         System.out.println("expectedBlockHeader : " + Hex.encodeHexString(expectedBlockHeader));
         final byte[] expectedX11Bytes = ByteUtils.littleEndian(Hex.decodeHex(("000000000013d72fca80766d7f5c362ddb3ed0bcbcba77b9cac8d01ee3a58b18").toCharArray()));
         System.out.println("expectedBlockHeader : " + Hex.encodeHexString(expectedBlockHeader));
+        byte[] expectedTarget = DifficultyUtil.calculateTarget(Hex.decodeHex("1b1a3f5e".toCharArray()));
+        expectedTarget = ByteUtils.extend(expectedTarget, 32);
+        System.out.println("expectedTarget : " + Hex.encodeHexString(expectedTarget));
 
         Initial initialMock = new Initial();
         MiningNotify miningNotifyMock = new MiningNotify();
@@ -110,6 +115,12 @@ public class ComplexBlockHeaderTest {
 
         System.out.println("expected x11 bytes : " + Hex.encodeHexString(X11Util.calculate(expectedBlockHeader)));
         System.out.println("producer x11 bytes : " + Hex.encodeHexString(X11Util.calculate(actualBlockCandidate)));
+        byte[] littleEndianActualX11Bytes = ByteUtils.littleEndian(actualX11Bytes);
+        System.out.println("littleEndianActualX11Bytes : " + Hex.encodeHexString(littleEndianActualX11Bytes));
+        boolean isTargetGreaterThan=ByteUtils.fastCompare(expectedTarget, littleEndianActualX11Bytes)==1;
+        System.out.println("isTargetGreaterThan : " + isTargetGreaterThan);
+        assertTrue(isTargetGreaterThan);
+        System.out.println("----------------------------------------------------------------");
 
     }
 

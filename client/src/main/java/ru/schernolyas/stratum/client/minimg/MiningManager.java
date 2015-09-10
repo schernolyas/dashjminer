@@ -72,7 +72,7 @@ public class MiningManager extends Thread {
 
                 blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(lastMiningNotify, initial);
                 byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
-                byte[] currentTarget = DifficultyUtil.calculateTarget(setDifficulty);
+                byte[] currentTarget = DifficultyUtil.calculateTarget(lastMiningNotify.getEncodedNetworkDifficulty());
                // LOG.log(Level.INFO, "currentTarget: {0}", new Object[]{Hex.encodeHexString(currentTarget)});
 
                 startMining(blockHeaderTemplate, currentTarget, nonceUtil);
@@ -89,14 +89,9 @@ public class MiningManager extends Thread {
     }
 
     private boolean hasAllDataForMining() {
-       // LOG.log(Level.INFO, "check all data");
         boolean hasInitial = (GlobalObjects.getInitialJsonString() != null);
-      //  LOG.log(Level.INFO, "hasInitial: {0}", new Object[]{hasInitial});
         boolean hasMiningNotifyJsonStrings = (GlobalObjects.getLastMiningNotifyJsonString() != null);
-     //   LOG.log(Level.INFO, "hasMiningNotifyJsonStrings: {0}", new Object[]{hasMiningNotifyJsonStrings});
         boolean hasSetDifficultyJsonString = (GlobalObjects.getSetDifficultyJsonString() != null);
-     //   LOG.log(Level.INFO, "hasSetDifficultyJsonString: {0}", new Object[]{hasSetDifficultyJsonString});
-
         return hasInitial && hasMiningNotifyJsonStrings && hasSetDifficultyJsonString;
     }
 
@@ -118,7 +113,8 @@ public class MiningManager extends Thread {
         MimingRecursiveTask mimingRecursiveTask = new MimingRecursiveTask(true, blockHeaderTemplate, currentTarget, nonceUtil);
         byte[] resultBlockHeader = commonForkJoinPool.invoke(mimingRecursiveTask);
         long stop = System.currentTimeMillis();
-        LOG.log(Level.INFO, "duration: {0} milisec; speed: {1}", new Object[]{stop-start,MimingRecursiveTask.GROUP_SIZE*100000/((stop-start)/1000)});
+        LOG.log(Level.INFO, "duration: {0} milisec; speed: {1}", new Object[]{stop-start,
+            MimingRecursiveTask.GROUP_SIZE*100000/((stop-start)/1000)});
         LOG.log(Level.INFO, "block header  : {0}",
                 new Object[]{resultBlockHeader != null ? Hex.encodeHexString(resultBlockHeader) : "null"});
         if (resultBlockHeader != null) {

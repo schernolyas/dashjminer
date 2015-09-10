@@ -51,6 +51,7 @@ public class NewMain1 {
             LOG.log(Level.INFO, "2. read from server: {0}", new Object[]{inFromServer.readLine()});
             LOG.log(Level.INFO, "3. read from server: {0}", new Object[]{inFromServer.readLine()});
             LOG.log(Level.INFO, "4. read from server: {0}", new Object[]{inFromServer.readLine()});
+            LOG.log(Level.INFO, "5. read from server: {0}", new Object[]{inFromServer.readLine()});
             inFromServer.close();
             writer.close();
             
