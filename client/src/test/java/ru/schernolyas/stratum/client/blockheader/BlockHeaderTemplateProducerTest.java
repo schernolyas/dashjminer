@@ -87,76 +87,11 @@ public class BlockHeaderTemplateProducerTest {
         assertArrayEquals(ByteUtils.littleEndian(miningNotify.getBlockVersion()), resultVersion);
 //        assertArrayEquals(miningNotify.getPreviousBlockHash(), resultPrevBlockHash);
         //assertArrayEquals(Hex.decodeHex(directFinalMerkleRoot.toCharArray()), resultMerkleRoot);
-        //  real example
-        //getblockheader 000000000013d72fca80766d7f5c362ddb3ed0bcbcba77b9cac8d01ee3a58b18 
-        Initial initialMock = new Initial();
-        MiningNotify miningNotifyMock = new MiningNotify();
-        miningNotifyMock.setBlockVersion(new byte[]{0,0,0,3});
-        miningNotifyMock.setEncodedNetworkDifficulty(Hex.decodeHex("5e3f1a1b".toCharArray()));
-        miningNotifyMock.setPreviousBlockHash(Hex.decodeHex("9f224030db8309b38b755facdbeb5047c29fc963c31e1a9138d4020000000000".toCharArray()));
         
-        BlockHeaderTemplateProducer instanceMock = new BlockHeaderTemplateProducer(miningNotifyMock, initialMock) {
-
-            @Override
-            protected byte[] calculateMerkelRoot() throws NoSuchAlgorithmException, IOException {
-                byte[] bytes = null;
-                try {
-                    bytes = Hex.decodeHex("da5aa8c3ba44284fee52e1c5c65392af8a483e7427de3b58c3639cdc23265ea0".toCharArray());                   
-                } catch (DecoderException e) {
-                    e.printStackTrace();
-                }
-                return bytes;
-            }
-
-        };
-        byte[] blockTemplate1 = instanceMock.produceBlockHeaderTemplate();
-        //add required nonce and time
-        Long requiredNonce = 2065871376L;
-        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES).putLong(requiredNonce);
-        final byte[] requiredNonceBytes = get4Bytes(buffer.array());
-        Long requiredTime = 1441460065L;
-        buffer = ByteBuffer.allocate(Long.BYTES).putLong(requiredTime);
-        final byte[] requiredTimeBytes =get4Bytes(buffer.array());
-        
-        System.out.println("blockTemplate1 : "+Hex.encodeHexString(blockTemplate1));
-        System.out.println("requiredNonceBytes : "+Hex.encodeHexString(requiredNonceBytes));
-        System.out.println("requiredTimeBytes : "+Hex.encodeHexString(requiredTimeBytes));
-        byte[] blockCandidate = blockTemplate1;
-        System.arraycopy(ByteUtils.littleEndian(requiredTimeBytes), 0, blockCandidate, TIME_POSITION, 4);
-        System.arraycopy(ByteUtils.littleEndian(requiredNonceBytes), 0, blockCandidate, NONCE_POSITION, 4);        
-        System.out.println("blockCandidate1 : "+Hex.encodeHexString(blockCandidate));
-        byte[] x11Bytes = X11Util.calculate(blockCandidate);
-        System.out.println("x11 bytes : "+Hex.encodeHexString(x11Bytes));
-        byte[] consoleBlockHeader = Hex.decodeHex(("03000000"
-                + "9f224030db8309b38b755facdbeb5047c29fc963c31e1a9138d4020000000000"
-                + "da5aa8c3ba44284fee52e1c5c65392af8a483e7427de3b58c3639cdc23265ea0"
-                + "61efea555e3f1a1b10b2227b").toCharArray());
-        System.out.println("consoleBlockHeader : "+Hex.encodeHexString(consoleBlockHeader));
-        assertArrayEquals(consoleBlockHeader, blockCandidate);
-        System.out.println("console x11 bytes : "+Hex.encodeHexString(X11Util.calculate(consoleBlockHeader)));
-        BlockHeaderCandidateProducer producer = new BlockHeaderCandidateProducer(blockTemplate1, new NonceTimeHolder() {
-
-            @Override
-            public byte[] getNTime() {
-                return requiredTimeBytes;
-            }
-
-            @Override
-            public byte[] getNonce() {
-                return requiredNonceBytes;
-            }
-        });
-        System.out.println("blockCandidate from producer : "+Hex.encodeHexString(producer.produceBlockHeaderCandidate()));
-        assertArrayEquals(consoleBlockHeader, producer.produceBlockHeaderCandidate());
-        System.out.println("producer x11 bytes : "+Hex.encodeHexString(X11Util.calculate(producer.produceBlockHeaderCandidate())));
         
 
     }
     
-    private static byte[] get4Bytes(byte[] b) {
-        byte[] b1 = new byte[4];
-        System.arraycopy(b, 4, b1, 0, 4);
-        return b1;
-    }
+    
 
 }
