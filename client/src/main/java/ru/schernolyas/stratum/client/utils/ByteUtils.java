@@ -89,8 +89,11 @@ public class ByteUtils {
     public static int fastCompare(byte[] array1,byte[] array2 )  {
         int result = 0;
         for (int index=0;(index<array1.length && result==0);index++) {
-            boolean greater = (array1[index]>array2[index]);
-            boolean less = (array1[index]<array2[index]);
+            int v1 = toUnsignedByte(array1[index]);
+            int v2 = toUnsignedByte(array2[index]);            
+            boolean greater = (v1>v2);
+            boolean less = (v1<v2);
+            //System.out.println("index:"+index+";"+v1+";"+v2+";"+greater+";"+less);
             if (greater) {
                 result=1;
             } else if (less)  {
@@ -98,6 +101,10 @@ public class ByteUtils {
             }
         }
         return result;
+    }
+    
+    public static int toUnsignedByte(byte b) {
+        return b>0 ? b : b & 0xff;        
     }
     
     public static byte[] extend(byte[] array, int size) {

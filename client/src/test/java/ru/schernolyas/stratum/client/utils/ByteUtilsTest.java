@@ -57,14 +57,18 @@ public class ByteUtilsTest {
     }
     
     @Test
-    public void testFastCompare() throws IOException {
+    public void testFastCompare() throws IOException, DecoderException {
         System.out.println("fastCompare");
         byte[] array1 = new byte[]{0,0,0,2,1};
         byte[] array2 = new byte[]{0,0,0,0,9};
-        assertEquals(1L, ByteUtils.fastCompare(array1, array2));
-        array2 = new byte[]{0,0,0,2,1};
+        //assertEquals(1L, ByteUtils.fastCompare(array1, array2));        
         array1 = new byte[]{0,0,0,0,9};
-        assertEquals(-1L, ByteUtils.fastCompare(array1, array2));
+        array2 = new byte[]{0,0,0,2,1};
+       // assertEquals(-1L, ByteUtils.fastCompare(array1, array2));
+        System.out.println("real example");
+        byte[] littleEndianX11Hash = Hex.decodeHex("f6121406354ecb3a73d1a8f996c041c5d8a266a5fb0e8f2e9791873a394468a9".toCharArray());
+        byte[] target = Hex.decodeHex("0000000000240481000000000000000000000000000000000000000000000000".toCharArray());
+        assertEquals(-1L, ByteUtils.fastCompare(target, littleEndianX11Hash));
     }
    
     @Test

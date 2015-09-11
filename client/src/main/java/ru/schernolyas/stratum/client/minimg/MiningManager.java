@@ -17,6 +17,7 @@ import ru.schernolyas.stratum.client.blockheader.BlockHeaderTemplateProducer;
 import ru.schernolyas.stratum.client.method.Initial;
 import ru.schernolyas.stratum.client.method.MiningNotify;
 import ru.schernolyas.stratum.client.method.SetDifficulty;
+import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.ClearJobsHolder;
 import ru.schernolyas.stratum.client.utils.DifficultyUtil;
 import ru.schernolyas.stratum.client.utils.NonceTimeHolderImpl;
@@ -72,8 +73,8 @@ public class MiningManager extends Thread {
 
                 blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(lastMiningNotify, initial);
                 byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
-                byte[] currentTarget = DifficultyUtil.calculateTarget(lastMiningNotify.getEncodedNetworkDifficulty());
-               // LOG.log(Level.INFO, "currentTarget: {0}", new Object[]{Hex.encodeHexString(currentTarget)});
+                byte[] currentTarget =ByteUtils.extend(DifficultyUtil.calculateTarget(lastMiningNotify.getEncodedNetworkDifficulty()),32);
+                LOG.log(Level.INFO, "currentTarget: {0}", new Object[]{Hex.encodeHexString(currentTarget)});
 
                 startMining(blockHeaderTemplate, currentTarget, nonceUtil);
                 if (ClearJobsHolder.needClearJobs()) {

@@ -134,10 +134,12 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
         //LOG.log(Level.INFO, "block header candidate  : {0}", new Object[]{Hex.encodeHexString(blockHeaderCandidate)});
         byte[] x11Hash = X11Util.calculate(blockHeaderCandidate);
         byte[] littleEndianX11Hash = ByteUtils.littleEndian(x11Hash);
-        //LOG.log(Level.INFO, "littleEndianX11Hash  : {0}", new Object[]{Hex.encodeHexString(littleEndianX11Hash)});
-
+        
         byte[] result = null;
         if (ByteUtils.fastCompare(currentTarget, littleEndianX11Hash) == 1) {
+            LOG.log(Level.INFO, "littleEndianX11Hash  : {0}; currentTarget: {1}", 
+                    new Object[]{Hex.encodeHexString(littleEndianX11Hash),
+                        Hex.encodeHexString(currentTarget)});
             result = blockHeaderCandidate;
         }
         return result;
