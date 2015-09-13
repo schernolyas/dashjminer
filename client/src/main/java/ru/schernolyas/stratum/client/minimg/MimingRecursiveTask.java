@@ -60,7 +60,7 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     }
 
     private byte[] managerCompute() {
-        long maxIteractions = NonceTimeHolderImpl.MAX_NONCE;
+        
         List<MimingRecursiveTask> forks = createSubtasks();
         // do {
         for (int i = 0; i < 100000; i++) {

@@ -9,9 +9,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
-import jdk.nashorn.internal.objects.Global;
 import org.apache.commons.codec.DecoderException;
-import ru.schernolyas.stratum.client.minimg.GlobalObjects;
 
 /**
  *
@@ -20,7 +18,7 @@ import ru.schernolyas.stratum.client.minimg.GlobalObjects;
 public class NonceTimeHolderImpl implements NonceTimeHolder {
 
     private static final Logger LOG = Logger.getLogger(NonceTimeHolderImpl.class.getName());
-    public static final long MAX_NONCE = 0xFFFFFFFF;
+    public static final BigInteger MAX_NONCE = new BigInteger("FFFFFFFF", 16);
 
     private Long nTime;
     private AtomicLong nonce;
