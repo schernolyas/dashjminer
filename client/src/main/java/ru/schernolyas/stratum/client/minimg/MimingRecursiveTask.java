@@ -61,7 +61,12 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     }
 
     private byte[] managerCompute() {
-        
+
+        BigInteger maxIteration = NonceTimeHolderImpl.MAX_NONCE.divide(new BigDecimal(GROUP_SIZE).toBigInteger());
+        //BigInteger maxIteration = new BigDecimal(100000).toBigInteger().divide(new BigDecimal(GROUP_SIZE).toBigInteger());
+        LOG.log(Level.INFO, "maxIteration  : {0}; maxNonce: {1};GROUP_SIZE: {2}",
+                new Object[]{maxIteration, NonceTimeHolderImpl.MAX_NONCE.toString(16), GROUP_SIZE});
+
         List<MimingRecursiveTask> forks = createSubtasks();
         // do {
         for (long i = 0; i < maxIteration.longValue(); i++) {
@@ -88,7 +93,7 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     }
 
     private void updateBlockHeaderTemplate() {
-    //check new version of mining.notify for current jobId
+        //check new version of mining.notify for current jobId
 
     }
 
@@ -132,15 +137,15 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
 
     private byte[] workerCompute() throws Exception {
         byte[] blockHeaderCandidate = blockHeaderCandidateProducer.produceBlockHeaderCandidate();
-        
+
         byte[] x11Hash = X11Util.calculate(blockHeaderCandidate);
         //LOG.log(Level.INFO, "block header candidate  : {0} ; x11Hash: {1}", new Object[]{Hex.encodeHexString(blockHeaderCandidate),
         //Hex.encodeHexString(x11Hash)});
         byte[] littleEndianX11Hash = ByteUtils.littleEndian(x11Hash);
-        
+
         byte[] result = null;
         if (ByteUtils.fastCompare(currentTarget, littleEndianX11Hash) == 1) {
-            LOG.log(Level.INFO, "littleEndianX11Hash  : {0}; currentTarget: {1}", 
+            LOG.log(Level.INFO, "littleEndianX11Hash  : {0}; currentTarget: {1}",
                     new Object[]{Hex.encodeHexString(littleEndianX11Hash),
                         Hex.encodeHexString(currentTarget)});
             result = blockHeaderCandidate;
