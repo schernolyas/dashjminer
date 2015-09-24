@@ -62,10 +62,6 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
 
     private byte[] managerCompute() {
         
-        BigInteger maxIteration = NonceTimeHolderImpl.MAX_NONCE.divide(new BigDecimal(GROUP_SIZE).toBigInteger());
-        //BigInteger maxIteration = new BigDecimal(100000).toBigInteger().divide(new BigDecimal(GROUP_SIZE).toBigInteger());
-        LOG.log(Level.INFO, "maxIteration  : {0}; maxNonce: {1};GROUP_SIZE: {2}", 
-                new Object[]{maxIteration,NonceTimeHolderImpl.MAX_NONCE.toString(16),GROUP_SIZE});
         List<MimingRecursiveTask> forks = createSubtasks();
         // do {
         for (long i = 0; i < maxIteration.longValue(); i++) {
