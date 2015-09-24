@@ -5,6 +5,7 @@
  */
 package ru.schernolyas.stratum.client.minimg;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,10 +61,14 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     }
 
     private byte[] managerCompute() {
-        long maxIteractions = NonceTimeHolderImpl.MAX_NONCE;
+        
+        BigInteger maxIteration = NonceTimeHolderImpl.MAX_NONCE.divide(new BigDecimal(GROUP_SIZE).toBigInteger());
+        //BigInteger maxIteration = new BigDecimal(100000).toBigInteger().divide(new BigDecimal(GROUP_SIZE).toBigInteger());
+        LOG.log(Level.INFO, "maxIteration  : {0}; maxNonce: {1};GROUP_SIZE: {2}", 
+                new Object[]{maxIteration,NonceTimeHolderImpl.MAX_NONCE.toString(16),GROUP_SIZE});
         List<MimingRecursiveTask> forks = createSubtasks();
         // do {
-        for (int i = 0; i < 100000; i++) {
+        for (long i = 0; i < maxIteration.longValue(); i++) {
             if ((i % 10000) == 0) {
                 LOG.log(Level.INFO, "iteration  : {0}", new Object[]{i});
             }
@@ -131,8 +136,10 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
 
     private byte[] workerCompute() throws Exception {
         byte[] blockHeaderCandidate = blockHeaderCandidateProducer.produceBlockHeaderCandidate();
-        //LOG.log(Level.INFO, "block header candidate  : {0}", new Object[]{Hex.encodeHexString(blockHeaderCandidate)});
+        
         byte[] x11Hash = X11Util.calculate(blockHeaderCandidate);
+        //LOG.log(Level.INFO, "block header candidate  : {0} ; x11Hash: {1}", new Object[]{Hex.encodeHexString(blockHeaderCandidate),
+        //Hex.encodeHexString(x11Hash)});
         byte[] littleEndianX11Hash = ByteUtils.littleEndian(x11Hash);
         
         byte[] result = null;

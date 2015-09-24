@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Сергей
+ * @author schernolyas
  */
 public class MerkleTreeUtil {
     private static final Logger LOG = Logger.getLogger(MerkleTreeUtil.class.getName());

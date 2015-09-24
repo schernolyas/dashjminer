@@ -11,7 +11,7 @@ import ru.schernolyas.stratum.client.method.MiningNotify;
 
 /**
  *
- * @author Сергей
+ * @author Sergey Chernolyas
  */
 public class CoinBaseUtil {
 

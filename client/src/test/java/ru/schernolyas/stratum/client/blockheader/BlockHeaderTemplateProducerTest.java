@@ -85,11 +85,29 @@ public class BlockHeaderTemplateProducerTest {
         System.out.println("direct nBits: " + Hex.encodeHexString(directNBits));
         assertArrayEquals(directNBits, resultNBits);
         assertArrayEquals(ByteUtils.littleEndian(miningNotify.getBlockVersion()), resultVersion);
-//        assertArrayEquals(miningNotify.getPreviousBlockHash(), resultPrevBlockHash);
-        //assertArrayEquals(Hex.decodeHex(directFinalMerkleRoot.toCharArray()), resultMerkleRoot);
+    }
+    
+    @Test
+    public void testCalculateMerkelRoot() throws Exception {
+        System.out.println("calculateMerkelRoot");
+        MiningNotify miningNotify = new MiningNotify();
+        miningNotify.setCoinBase1(Hex.decodeHex(("01000000010000000000000000000000000000000000000000000000000000000000000000"
+                + "ffffffff2003833205040457015608").toCharArray()));
+        miningNotify.setCoinBase2(Hex.decodeHex(("0d2f6e6f64655374726174756d2f0000000002f3da000f000000001976a914edc3ed0229526ea4c728d714b5289f97e7f63a2188aceada000f"
+                + "000000001976a9146454ca08ba97746055ffaf2023dbfd241708fb7c88ac00000000").toCharArray()));
+        byte[][] merkleBranches = new byte[3][];
+        merkleBranches[0] = Hex.decodeHex("b7d74cc1c8a608d5d56c2fbdf687d7285fa22eee8525008e7768341630bfa0c3".toCharArray());
+        merkleBranches[1] = Hex.decodeHex("81bf5e828cf5a2feac1b37140d97ebbff9d30f01c26b8416fd2dfbd0934e3934".toCharArray());
+        merkleBranches[2] = Hex.decodeHex("5506686705125068251ca9e2814c39be64ad3869ab8579d7fc0cdf35ce7f6362".toCharArray());
+        miningNotify.setMerkleBranches(merkleBranches);
+        Initial initial = new Initial();
+        initial.setExtraNonce2Size(4);
+        initial.setExtraNonce1(Hex.decodeHex("7fefc86c".toCharArray()));
         
-        
-
+        BlockHeaderTemplateProducer instance = new BlockHeaderTemplateProducer(miningNotify, initial);
+        byte[] expectedMerkleRoot = Hex.decodeHex(("08a8ae703d05d04518b07ffa6b70dbe88dcad8451681b05155a8116bbcab1772").toCharArray());
+        byte[] actualMerkleRoot = instance.calculateMerkelRoot();
+        assertArrayEquals(expectedMerkleRoot,actualMerkleRoot);
     }
     
     
