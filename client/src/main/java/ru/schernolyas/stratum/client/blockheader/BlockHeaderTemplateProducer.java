@@ -41,11 +41,11 @@ public class BlockHeaderTemplateProducer {
         LOG.log(Level.INFO, "finalMerkleRoot : {0}", new Object[]{Hex.encodeHexString(finalMerkleRoot)});
 
         BlockHeaderImpl blockHeader = new BlockHeaderImpl();
-        blockHeader.setVersion(ByteUtils.littleEndian(miningNotify.getBlockVersion()));
-        //LOG.log(Level.INFO, "blockHeader.getVersion() : {0}", new Object[]{Hex.encodeHexString(blockHeader.getVersion())});
-        blockHeader.setMerkleRoot(finalMerkleRoot);
+        blockHeader.setVersion(miningNotify.getBlockVersion());
+        blockHeader.setMerkleRoot(ByteUtils.preparePrevHash(finalMerkleRoot));
         blockHeader.setPrevHash(miningNotify.getPreviousBlockHash());
         blockHeader.setnBit(miningNotify.getEncodedNetworkDifficulty());
+        blockHeader.setnTime(miningNotify.getCurrentTime());
         return blockHeader.toBlockHeader();
     }
 

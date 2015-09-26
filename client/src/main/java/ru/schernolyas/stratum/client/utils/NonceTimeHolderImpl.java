@@ -7,6 +7,7 @@ package ru.schernolyas.stratum.client.utils;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
@@ -26,7 +27,7 @@ public class NonceTimeHolderImpl implements NonceTimeHolder {
     public NonceTimeHolderImpl()  {
 
         this.nTime = getCurrentTimeInSeconds();
-        this.nonce = new AtomicLong(0L);
+        this.nonce = new AtomicLong(-1L);
     }
 
     public NonceTimeHolderImpl(byte[] nTime) throws DecoderException {
@@ -36,24 +37,25 @@ public class NonceTimeHolderImpl implements NonceTimeHolder {
 
     public NonceTimeHolderImpl(byte[] nTime, long startNonce) throws DecoderException {
         this.nTime = new BigInteger(nTime).longValue();
-        //5628506L
+        this.nonce = new AtomicLong(startNonce);
+    }
+    public NonceTimeHolderImpl(long startNonce) throws DecoderException {
         this.nonce = new AtomicLong(startNonce);
     }
 
     @Override
     public byte[] getNonce() {
-        byte[] resultNonceBytes = new byte[]{0, 0, 0, 0};
-        byte[] nonceIntBytes = ByteBuffer.allocate(Long.BYTES).putLong(nonce.incrementAndGet()).array();
-        System.arraycopy(nonceIntBytes, 4, resultNonceBytes, 0, 4);
-        return resultNonceBytes;
+        long currentNonce = nonce.incrementAndGet();
+        System.out.println("currentNonce:"+currentNonce);
+        return Arrays.copyOfRange(ByteBuffer.allocate(Long.BYTES).putLong(currentNonce).array(),4, 8) ;
     }
 
     @Override
     public byte[] getNTime() {
         byte[] nTimeBytes = new byte[]{0, 0, 0, 0};
-        byte[] nTimeIntBytes = ByteBuffer.allocate(Long.BYTES).
+        /*byte[] nTimeIntBytes = ByteBuffer.allocate(Long.BYTES).
                 putLong(getCurrentTimeInSeconds()).array();
-        System.arraycopy(nTimeIntBytes, 4, nTimeBytes, 0, 4);
+        System.arraycopy(nTimeIntBytes, 4, nTimeBytes, 0, 4);*/
         return nTimeBytes;
     }
 

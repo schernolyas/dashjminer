@@ -5,6 +5,7 @@
  */
 package ru.schernolyas.stratum.client.blockheader;
 
+import org.apache.commons.codec.binary.Hex;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.NonceTimeHolder;
 
@@ -44,9 +45,10 @@ public class BlockHeaderCandidateProducer {
      * @return bytes of block header
      */
     public byte[] produceBlockHeaderCandidate() {
-        byte[] littleEndianTime = ByteUtils.littleEndian(nonceTimeHolder.getNTime());
-        byte[] littleEndianNonce = ByteUtils.littleEndian(nonceTimeHolder.getNonce());
-        System.arraycopy(littleEndianTime, 0, blockHeaderTemplateCopy, TIME_POSITION, 4);
+        byte[] nonce = nonceTimeHolder.getNonce();
+        System.out.println(Hex.encodeHexString(nonce));
+        byte[] littleEndianNonce = ByteUtils.littleEndian(nonce);
+        System.out.println(littleEndianNonce.length);
         System.arraycopy(littleEndianNonce, 0, blockHeaderTemplateCopy, NONCE_POSITION, 4);
         return blockHeaderTemplateCopy;
     }

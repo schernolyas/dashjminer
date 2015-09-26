@@ -47,12 +47,10 @@ public class ComplexBlockHeaderTest {
     public void tearDown() {
     }
 
-    @Test
+    //@Test    
     public void testProduceBlockHeader() throws Exception {
         System.out.println("produceBlockHeader");
 
-        //  real example
-        //getblockheader 000000000013d72fca80766d7f5c362ddb3ed0bcbcba77b9cac8d01ee3a58b18 
         final byte[] expectedBlockHeader = Hex.decodeHex(("03000000"
                 + "9f224030db8309b38b755facdbeb5047c29fc963c31e1a9138d4020000000000"
                 + "da5aa8c3ba44284fee52e1c5c65392af8a483e7427de3b58c3639cdc23265ea0"

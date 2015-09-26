@@ -60,31 +60,24 @@ public class BlockHeaderTemplateProducerTest {
         Long eNonce = 2065871376L;
         System.out.println("eNonce: " + Long.toHexString(eNonce));
 
-        Initial initial = Initial.build("{\"id\":1,\"result\":[[[\"mining.set_difficulty\",\"deadbeefcafebabe818f0f0000000000\"],[\"mining.notify\",\"deadbeefcafebabe818f0f0000000000\"]],\"7ff83614\",4],\"error\":null}");
+        Initial initial = Initial.build("{\"id\":1,\"result\":[[[\"mining.set_difficulty\",\"deadbeefcafebabe818f0f0000000000\"],[\"mining.notify\",\"deadbeefcafebabe818f0f0000000000\"]],\"7fedb6ae\",4],\"error\":null}");
         MiningNotify miningNotify = MiningNotify.build("{\"id\":null,\"method\":\"mining.notify\",\"params\":[\"501d\","
-                + "\"b41a9bb47033147cd5c191eda450437c61ed3f92106913070001df4e00000000\",\"01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff20037814050450dcee5508\","
-                + "\"0d2f6e6f64655374726174756d2f00000000023d7c6f11000000001976a914edc3ed0229526ea4c728d714b5289f97e7f63a2188ac377c6f11000000001976a9142491bea15e2e948e78230c5d6d6754a4fc4cd1a288ac00000000\","
-                + "[\"08166f0b04c138d45498d7fc70a4dee2f15afd5a24b36a94f02542d61c8c33ec\",\"16ef35eed1539b0c1dacbaf130a949a2e1e0f67e4b1245823c8cb1e192d44945\",\"d823c777769a6e3db63b4c7a563f26554585f71ab7e0f24acd6c01c03dd82db5\"],"
-                + "\"00000003\",\"1b1c668c\",\"55eedc6c\",false]}");
+                + "\"7fb4163f834ae0187184bd1ae35df007fb61ddf0c6f9152d0012b85200000000\",\"01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff2003133905047e64055608\","
+                + "\"0d2f6e6f64655374726174756d2f0000000002f3da000f000000001976a914edc3ed0229526ea4c728d714b5289f97e7f63a2188aceada000f000000001976a914379ec5e42845cf0c93294952a8e9e55047bb0ca988ac00000000\","
+                + "[\"fba3f6bf08fbabafdf3ae1d66dd13a8798eaf29a39235d495d1bcd02ef2e8f37\",\"7f218cf6fc3223d497c5ed4b72b7c6df3e8d679b93dc34932978774b011a9cc8\",\"a211087f67f08362489fbd44fc0375c76e80c7e6f7321fa3c9885e09bafec1d3\"],"
+                + "\"00000003\",\"1b195308\",\"5605647e\",false]}");
         System.out.println("BlockVersion: " + Hex.encodeHexString(miningNotify.getBlockVersion()));
-        //todo: may be incorrect!!!
-        String directFinalMerkleRoot = "d9ddb44caa7e944be785b7e25fc59e410861a5d14a53e6fbe87907fe78abef18";
+       
+        
         BlockHeaderTemplateProducer instance = new BlockHeaderTemplateProducer(miningNotify, initial);
-        byte[] result = instance.produceBlockHeaderTemplate();
-        byte[] directNBits = miningNotify.getEncodedNetworkDifficulty();
-        byte[] resultNBits = new byte[4];
-        byte[] resultVersion = new byte[4];
-        byte[] resultPrevBlockHash = new byte[32];
-        byte[] resultMerkleRoot = new byte[32];
-        System.arraycopy(result, (4 + 32 + 32 + 4), resultNBits, 0, 4);
-        System.arraycopy(result, 0, resultVersion, 0, 4);
-        System.arraycopy(result, 4, resultPrevBlockHash, 0, 32);
-        System.arraycopy(result, 4 + 32, resultMerkleRoot, 0, 32);
-        System.out.println("result: " + Hex.encodeHexString(result));
-        System.out.println("direct nBits: " + Hex.encodeHexString(miningNotify.getEncodedNetworkDifficulty()));
-        System.out.println("direct nBits: " + Hex.encodeHexString(directNBits));
-        assertArrayEquals(directNBits, resultNBits);
-        assertArrayEquals(ByteUtils.littleEndian(miningNotify.getBlockVersion()), resultVersion);
+        byte[] actualBlockHeaderTemplate = instance.produceBlockHeaderTemplate();
+        byte[] expectedBlockHeaderTemplate = Hex.decodeHex(("00000003"
+                + "7fb4163f834ae0187184bd1ae35df007fb61ddf0c6f9152d0012b85200000000"
+                + "4568febd9362ebfa0a9e10a1092e44f9a89a09921e66d264531b5b9481fda1935"
+                + "605647e1b19530800000000").toCharArray());
+        System.out.println("expectedBlockHeaderTemplate: " + Hex.encodeHexString(expectedBlockHeaderTemplate));
+        System.out.println("actualBlockHeaderTemplate  : " + Hex.encodeHexString(actualBlockHeaderTemplate));
+        assertArrayEquals(expectedBlockHeaderTemplate, actualBlockHeaderTemplate);
     }
     
     @Test

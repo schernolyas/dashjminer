@@ -5,6 +5,8 @@
  */
 package ru.schernolyas.stratum.client.blockheader;
 
+import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.After;
@@ -16,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.schernolyas.stratum.client.utils.ByteUtils;
 import ru.schernolyas.stratum.client.utils.NonceTimeHolder;
+import ru.schernolyas.stratum.client.utils.NonceTimeHolderImpl;
 
 /**
  *
@@ -51,37 +54,34 @@ public class BlockHeaderCandidateProducerTest {
     @Test
     public void testProduceBlockHeader() throws DecoderException {
         System.out.println("produceBlockHeader");
-        byte[] blockHeaderTemplate = Hex.decodeHex(("03000000"
-                + "b41a9bb47033147cd5c191eda450437c61ed3f92106913070001df4e00000000"
-                + "d9ddb44caa7e944be785b7e25fc59e410861a5d14a53e6fbe87907fe78abef180"
-                + "00000008c661c1b00000000").toCharArray());
+        byte[] blockHeaderTemplate = Hex.decodeHex(("00000003"
+                + "7fb4163f834ae0187184bd1ae35df007fb61ddf0c6f9152d0012b85200000000"
+                + "4568febd9362ebfa0a9e10a1092e44f9a89a09921e66d264531b5b9481fda193"
+                + "5605647e"
+                + "1b195308"
+                + "00000000").toCharArray());
+        byte[] expectedBlockHeaderTemplate1 = Hex.decodeHex(("00000003"
+                + "7fb4163f834ae0187184bd1ae35df007fb61ddf0c6f9152d0012b85200000000"
+                + "4568febd9362ebfa0a9e10a1092e44f9a89a09921e66d264531b5b9481fda193"
+                + "5605647e"
+                + "1b195308"
+                + "00000000").toCharArray());
+        byte[] expectedBlockHeaderTemplate2 = Hex.decodeHex(("00000003"
+                + "7fb4163f834ae0187184bd1ae35df007fb61ddf0c6f9152d0012b85200000000"
+                + "4568febd9362ebfa0a9e10a1092e44f9a89a09921e66d264531b5b9481fda193"
+                + "5605647e"
+                + "1b195308"
+                + "01000000").toCharArray());
         
-        System.out.println("example nonce:"+Long.toHexString(2065871376L));
-        System.out.println("example time:"+Long.toHexString(1441460065L));
-        final byte[] time = Hex.decodeHex("53bf3cd7".toCharArray());         
-        final byte[] startNonce = Hex.decodeHex("FEDCBA98".toCharArray());
-        BlockHeaderCandidateProducer instance = new BlockHeaderCandidateProducer(blockHeaderTemplate, new NonceTimeHolder() {
-
-            @Override
-            public byte[] getNTime() {
-                return time;
-            }
-
-            @Override
-            public byte[] getNonce() {
-                return startNonce;
-            }
-
-        });
-        byte[] actualResult = instance.produceBlockHeaderCandidate();
-        System.out.println(Hex.encodeHexString(actualResult));
-        byte[] actualNonce = new byte[4];
-        System.arraycopy(actualResult, (4+32+32+4+4), actualNonce, 0, 4);
-        byte[] actualTime = new byte[4];
-        System.arraycopy(actualResult, (4+32+32), actualTime, 0, 4);
-        assertArrayEquals(ByteUtils.littleEndian(time), actualTime);
-        assertArrayEquals(ByteUtils.littleEndian(startNonce), actualNonce);   
-        assertEquals(actualResult.length,80L);
+        
+        BlockHeaderCandidateProducer instance = new BlockHeaderCandidateProducer(blockHeaderTemplate, new NonceTimeHolderImpl());
+        byte[] actualResult1 = instance.produceBlockHeaderCandidate();
+        System.out.println("actual Block Header Candidate 1:"+Hex.encodeHexString(actualResult1));
+        assertArrayEquals(expectedBlockHeaderTemplate1, actualResult1);
+        
+        byte[] actualResult2 = instance.produceBlockHeaderCandidate();
+        System.out.println("actual Block Header Candidate 2:"+Hex.encodeHexString(actualResult2));
+        assertArrayEquals(expectedBlockHeaderTemplate2, actualResult2);
     }
 
 }

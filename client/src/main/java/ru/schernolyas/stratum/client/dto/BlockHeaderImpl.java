@@ -18,7 +18,7 @@ public class BlockHeaderImpl implements BlockHeader {
     private byte[] version;
     private byte[] prevHash;
     private byte[] merkleRoot;
-    private byte[] nTime = DEFAULT_4_BYTES;
+    private byte[] nTime;
     private byte[] nBit;
     private byte[] nonce = DEFAULT_4_BYTES;
 

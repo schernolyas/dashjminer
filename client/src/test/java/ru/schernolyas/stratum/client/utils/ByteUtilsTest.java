@@ -100,16 +100,28 @@ public class ByteUtilsTest {
     /**
      * Test of preparePrevHash method, of class ByteUtils.
      */
-   /* @Test
+    @Test
     public void testPreparePrevHash() throws Exception {
         System.out.println("preparePrevHash");
-        byte[] prevHashButes = null;
-        ByteUtils instance = new ByteUtils();
-        byte[] expResult = null;
-        byte[] result = instance.preparePrevHash(prevHashButes);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    } */
+        byte[] expectedPrevHashBytes = Hex.decodeHex("4568febd9362ebfa0a9e10a1092e44f9a89a09921e66d264531b5b9481fda193".toCharArray());
+        byte[] prevHashBytes = Hex.decodeHex("bdfe6845faeb6293a1109e0af9442e0992099aa864d2661e945b1b5393a1fd81".toCharArray());
+        byte[] result = ByteUtils.preparePrevHash(prevHashBytes);
+        assertArrayEquals(expectedPrevHashBytes, result);        
+    } 
+    @Test
+    public void testPrepareForX11Hash() throws Exception {
+        System.out.println("prepareForX11Hash");
+        byte[] expectedPrevHashBytes = Hex.decodeHex(("03000000"
+                + "29370132bb497a4d13c650774076f03471fb8669f1adeea276a20a0000000000"
+                + "e9dbf74af1f9da0abd8642d2a0cde9fad4c7bef19e43304a8c1938bb55e1e967b164055621a81b1b"
+                + "00000000").toCharArray());
+        
+        byte[] blockHeaderCandidateBytes = Hex.decodeHex(("00000003"
+                + "320137294d7a49bb7750c61334f076406986fb71a2eeadf1000aa27600000000"
+                + "4af7dbe90adaf9f1d24286bdfae9cda0f1bec7d44a30439ebb38198c67e9e155560564b11b1ba821"
+                + "00000000").toCharArray());
+        byte[] result = ByteUtils.prepareForX11Hash(blockHeaderCandidateBytes);
+        assertArrayEquals(expectedPrevHashBytes, result);        
+    }
     
 }

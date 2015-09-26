@@ -10,6 +10,7 @@ package ru.schernolyas.stratum.client.utils;
  * @author schernolyas
  */
 public interface NonceTimeHolder {
+    @Deprecated
     public byte[] getNTime();
     public byte[] getNonce();
     

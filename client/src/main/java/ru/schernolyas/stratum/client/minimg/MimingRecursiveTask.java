@@ -55,7 +55,7 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
         try {
             computeResult = isManagerTask ? managerCompute() : workerCompute();
         } catch (Exception ex) {
-            Logger.getLogger(MimingRecursiveTask.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MimingRecursiveTask.class.getName()).log(Level.SEVERE, "Error!", ex);
         }
         return computeResult;
     }
@@ -137,19 +137,8 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
 
     private byte[] workerCompute() throws Exception {
         byte[] blockHeaderCandidate = blockHeaderCandidateProducer.produceBlockHeaderCandidate();
-        /*
-        pdata - currect block header
-        <code>
-        int kk=0;
-	for (; kk < 32; kk++)
-	{
-		be32enc(&endiandata[kk], ((uint32_t*)pdata)[kk]);
-	};
-        
-        </code>
-        */
-
-        byte[] x11Hash = X11Util.calculate(blockHeaderCandidate);
+        byte[] preparedX11BlockHeaderCandidate = ByteUtils.prepareForX11Hash(blockHeaderCandidate);
+        byte[] x11Hash = X11Util.calculate(preparedX11BlockHeaderCandidate);
         //LOG.log(Level.INFO, "block header candidate  : {0} ; x11Hash: {1}", new Object[]{Hex.encodeHexString(blockHeaderCandidate),
         //Hex.encodeHexString(x11Hash)});
         byte[] littleEndianX11Hash = ByteUtils.littleEndian(x11Hash);
