@@ -80,7 +80,6 @@ public class X11Util {
                 }
             }
         }
-
         return hash!=null ? Arrays.copyOfRange(hash, 31, 63) : null;
     }
 }

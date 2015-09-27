@@ -13,5 +13,6 @@ public interface NonceTimeHolder {
     @Deprecated
     public byte[] getNTime();
     public byte[] getNonce();
+    public byte[] getNonce(long offset);
     
 }

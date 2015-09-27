@@ -29,7 +29,9 @@ public class BlockHeaderCandidateProducer {
      * @param nonceTimeHolder initialized util
      */
     public BlockHeaderCandidateProducer(byte[] blockHeaderTemplateBytes, NonceTimeHolder nonceTimeHolder) {
-        System.arraycopy(blockHeaderTemplateBytes, 0, this.blockHeaderTemplateCopy, 0, 80);
+        if (blockHeaderTemplateBytes != null) {
+            System.arraycopy(blockHeaderTemplateBytes, 0, this.blockHeaderTemplateCopy, 0, 80);
+        }
         this.nonceTimeHolder = nonceTimeHolder;
     }
 
@@ -46,9 +48,7 @@ public class BlockHeaderCandidateProducer {
      */
     public byte[] produceBlockHeaderCandidate() {
         byte[] nonce = nonceTimeHolder.getNonce();
-        System.out.println(Hex.encodeHexString(nonce));
         byte[] littleEndianNonce = ByteUtils.littleEndian(nonce);
-        System.out.println(littleEndianNonce.length);
         System.arraycopy(littleEndianNonce, 0, blockHeaderTemplateCopy, NONCE_POSITION, 4);
         return blockHeaderTemplateCopy;
     }

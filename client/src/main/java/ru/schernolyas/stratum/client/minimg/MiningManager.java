@@ -107,11 +107,11 @@ public class MiningManager extends Thread {
     public boolean startMining(byte[] blockHeaderTemplate, byte[] currentTarget, NonceTimeHolderImpl nonceUtil) {
         LOG.log(Level.INFO, "--------------start mining---------------------");
         //ForkJoinPool commonForkJoinPool = ForkJoinPool.commonPool();
-        ForkJoinPool commonForkJoinPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors()*2);
+        ForkJoinPool commonForkJoinPool = new ForkJoinPool(MimingRecursiveTask.GROUP_SIZE);
         
         //TODO: add read data
         long start  = System.currentTimeMillis();
-        MimingRecursiveTask mimingRecursiveTask = new MimingRecursiveTask(true, blockHeaderTemplate, currentTarget, nonceUtil);
+        MimingRecursiveTask mimingRecursiveTask = new MimingRecursiveTask(true,   nonceUtil);
         byte[] resultBlockHeader = commonForkJoinPool.invoke(mimingRecursiveTask);
         long stop = System.currentTimeMillis();
         LOG.log(Level.INFO, "duration: {0} milisec; speed: {1}", new Object[]{stop-start,

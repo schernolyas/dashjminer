@@ -45,10 +45,15 @@ public class NonceTimeHolderImpl implements NonceTimeHolder {
 
     @Override
     public byte[] getNonce() {
-        long currentNonce = nonce.incrementAndGet();
-        System.out.println("currentNonce:"+currentNonce);
+        return getNonce(0);
+    }
+
+    @Override
+    public byte[] getNonce(long offset) {
+        long currentNonce = nonce.incrementAndGet()+offset;
         return Arrays.copyOfRange(ByteBuffer.allocate(Long.BYTES).putLong(currentNonce).array(),4, 8) ;
     }
+    
 
     @Override
     public byte[] getNTime() {

@@ -101,6 +101,12 @@ public class ComplexBlockHeaderTest {
             public byte[] getNonce() {
                 return requiredNonceBytes;
             }
+
+            @Override
+            public byte[] getNonce(long offset) {
+                return requiredNonceBytes;
+            }
+            
         });
 
         byte[] actualBlockCandidate = producer.produceBlockHeaderCandidate();

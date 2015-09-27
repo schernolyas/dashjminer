@@ -5,19 +5,14 @@
  */
 package ru.schernolyas.stratum.client.blockheader;
 
-import java.nio.ByteBuffer;
-import java.nio.LongBuffer;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.schernolyas.stratum.client.utils.ByteUtils;
-import ru.schernolyas.stratum.client.utils.NonceTimeHolder;
 import ru.schernolyas.stratum.client.utils.NonceTimeHolderImpl;
 
 /**

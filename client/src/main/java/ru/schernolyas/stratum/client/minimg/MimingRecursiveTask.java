@@ -38,15 +38,33 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     private byte[] result;
     private BlockHeaderCandidateProducer blockHeaderCandidateProducer;
     private int testCount = 0;
+    private boolean stopCalculation;
 
-    public MimingRecursiveTask(boolean isManagerTask, byte[] blockHeaderTemplate, byte[] currentTarget, NonceTimeHolder nonceTimeHolder) {
+    public MimingRecursiveTask(boolean isManagerTask, NonceTimeHolder nonceTimeHolder) {
         this.isManagerTask = isManagerTask;
-        this.blockHeaderTemplate = blockHeaderTemplate;
-        this.currentTarget = currentTarget;
         this.nonceTimeHolder = nonceTimeHolder;
         if (!this.isManagerTask) {
             this.blockHeaderCandidateProducer = new BlockHeaderCandidateProducer(blockHeaderTemplate, nonceTimeHolder);
         }
+    }
+
+    public byte[] getBlockHeaderTemplate() {
+        return blockHeaderTemplate;
+    }
+
+    public void setBlockHeaderTemplate(byte[] blockHeaderTemplate) {
+        this.blockHeaderTemplate = blockHeaderTemplate;
+        if (!this.isManagerTask) {
+            this.blockHeaderCandidateProducer.updateBlockTemplate(blockHeaderTemplate);
+        }
+    }
+
+    public byte[] getCurrentTarget() {
+        return currentTarget;
+    }
+
+    public void setCurrentTarget(byte[] currentTarget) {
+        this.currentTarget = currentTarget;
     }
 
     @Override
@@ -61,14 +79,12 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     }
 
     private byte[] managerCompute() {
-
         BigInteger maxIteration = NonceTimeHolderImpl.MAX_NONCE.divide(new BigDecimal(GROUP_SIZE).toBigInteger());
         //BigInteger maxIteration = new BigDecimal(100000).toBigInteger().divide(new BigDecimal(GROUP_SIZE).toBigInteger());
-        LOG.log(Level.INFO, "maxIteration  : {0}; maxNonce: {1};GROUP_SIZE: {2}",
+        LOG.log(Level.INFO, "maxIteration  : {0}; maxNonce: {1}; GROUP_SIZE: {2}",
                 new Object[]{maxIteration, NonceTimeHolderImpl.MAX_NONCE.toString(16), GROUP_SIZE});
 
         List<MimingRecursiveTask> forks = createSubtasks();
-        // do {
         for (long i = 0; i < maxIteration.longValue(); i++) {
             if ((i % 10000) == 0) {
                 LOG.log(Level.INFO, "iteration  : {0}", new Object[]{i});
@@ -79,57 +95,38 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
                 subtask.fork();
             }
 
-            for (MimingRecursiveTask subtask : forks) {
+            for (Iterator<MimingRecursiveTask> iterator = forks.iterator(); iterator.hasNext() && !isStopCalculation();) {
+                MimingRecursiveTask subtask = iterator.next();
                 byte[] localResult = subtask.join();
                 if (localResult != null) {
                     result = localResult;
                 }
             }
-            reInit(forks);
+
+            if (isStopCalculation()) {
+                break;
+            } else {
+                reInit(forks);
+            }
         }
-        //} while (defineNeedRunNextIteration(result));
         return result;
-
-    }
-
-    private void updateBlockHeaderTemplate() {
-        //check new version of mining.notify for current jobId
 
     }
 
     private void reInit(List<MimingRecursiveTask> forks) {
         forks.parallelStream().forEach((fork) -> {
             fork.reinitialize();
+            fork.setBlockHeaderTemplate(getBlockHeaderTemplate());
+            fork.setCurrentTarget(getCurrentTarget());
         });
-    }
-
-    private boolean defineNeedRunNextIteration(byte[] result) {
-        boolean needRunNextIteration = false;
-        /*if (testCount==0) {
-         needRunNextIteration = true;
-         testCount++;
-         } else {
-         needRunNextIteration = false;
-         } */
-        return needRunNextIteration;
-    }
-
-    private boolean __defineNeedRunNextIteration(byte[] result) {
-        boolean needRunNextIteration = false;
-        boolean needClearJobs = ClearJobsHolder.needClearJobs();
-        boolean hasNewBlock = (result != null);
-        if (needClearJobs) {
-            needRunNextIteration = false;
-        } else {
-            needRunNextIteration = !hasNewBlock;
-        }
-        return needRunNextIteration;
     }
 
     private List<MimingRecursiveTask> createSubtasks() {
         List<MimingRecursiveTask> subtasks = new ArrayList<>(GROUP_SIZE);
         for (int i = 0; i < GROUP_SIZE; i++) {
-            MimingRecursiveTask subtask = new MimingRecursiveTask(false, blockHeaderTemplate, currentTarget, nonceTimeHolder);
+            MimingRecursiveTask subtask = new MimingRecursiveTask(false, nonceTimeHolder);
+            subtask.setBlockHeaderTemplate(getBlockHeaderTemplate());
+            subtask.setCurrentTarget(getCurrentTarget());
             subtasks.add(subtask);
         }
         return subtasks;
@@ -151,6 +148,14 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
             result = blockHeaderCandidate;
         }
         return result;
+    }
+
+    public boolean isStopCalculation() {
+        return stopCalculation;
+    }
+
+    public void setStopCalculation(boolean stopCalculation) {
+        this.stopCalculation = stopCalculation;
     }
 
 }

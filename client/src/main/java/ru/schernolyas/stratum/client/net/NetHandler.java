@@ -14,7 +14,6 @@ import io.vertx.core.net.NetSocket;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ru.schernolyas.stratum.client.StratumClient;
 
 /**
  *
