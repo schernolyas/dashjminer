@@ -133,10 +133,15 @@ public class MimingRecursiveTask extends RecursiveTask<byte[]> {
     }
 
     private byte[] workerCompute() throws Exception {
+
         byte[] blockHeaderCandidate = blockHeaderCandidateProducer.produceBlockHeaderCandidate();
         byte[] preparedX11BlockHeaderCandidate = ByteUtils.prepareForX11Hash(blockHeaderCandidate);
+
         byte[] x11Hash = X11Util.calculate(preparedX11BlockHeaderCandidate);
-        //LOG.log(Level.INFO, "block header candidate  : {0} ; x11Hash: {1}", new Object[]{Hex.encodeHexString(blockHeaderCandidate),
+        //LOG.log(Level.INFO, "block header candidate  : {0} ; prepared for X11 : {1}; x11Hash: {2}",
+        //        new Object[]{Hex.encodeHexString(blockHeaderCandidate), Hex.encodeHexString(preparedX11BlockHeaderCandidate),
+        //Hex.encodeHexString(x11Hash)});
+//LOG.log(Level.INFO, "block header candidate  : {0} ; x11Hash: {1}", new Object[]{Hex.encodeHexString(blockHeaderCandidate),
         //Hex.encodeHexString(x11Hash)});
         byte[] littleEndianX11Hash = ByteUtils.littleEndian(x11Hash);
 

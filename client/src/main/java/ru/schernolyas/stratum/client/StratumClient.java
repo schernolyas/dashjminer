@@ -69,8 +69,8 @@ public class StratumClient {
         vertx.deployVerticle(MiningWorkerVerticle.class.getName(), deploymentOptions);
         //MiningManager miningManager = new MiningManager(eventBus);
 
-        //tcpClient.connect(16090, "mine3.coinmine.pl", new NetHandler(eventBus));
-        tcpClient.connect(7777, "dash.coinobox.com", new NetHandler(eventBus));
+        tcpClient.connect(16090, "mine3.coinmine.pl", new NetHandler(eventBus));
+        //tcpClient.connect(7777, "dash.coinobox.com", new NetHandler(eventBus));
         
 //miningManager.start();
         //miningManager.join();

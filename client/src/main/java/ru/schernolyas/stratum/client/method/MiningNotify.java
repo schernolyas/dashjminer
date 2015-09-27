@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import ru.schernolyas.stratum.client.utils.ByteUtils;
 
 /**
  *
@@ -34,7 +35,7 @@ public class MiningNotify {
     private static MiningNotify processJsonObject(JsonObject jsonObject) throws DecoderException {
         MiningNotify miningNotify = new MiningNotify();
         JsonArray paramsArray = jsonObject.getJsonArray("params");
-        miningNotify.setJobId(Hex.decodeHex(paramsArray.getString(0).toCharArray()));
+        miningNotify.setJobId(Hex.decodeHex(ByteUtils.prepareForHex(paramsArray.getString(0).toCharArray())));
         LOG.log(Level.INFO, "jobId : {0}", new Object[]{Hex.encodeHexString(miningNotify.getJobId())});
         miningNotify.setPreviousBlockHash(Hex.decodeHex(paramsArray.getString(1).toCharArray()));
         LOG.log(Level.INFO, "previousBlockHash : {0}", new Object[]{Hex.encodeHexString(miningNotify.getPreviousBlockHash())});

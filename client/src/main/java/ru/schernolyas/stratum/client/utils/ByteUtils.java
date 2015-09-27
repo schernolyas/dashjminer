@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.Pipe;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -158,5 +157,21 @@ public class ByteUtils {
         }
         baos.flush();
         return baos.toByteArray();
+    }
+    public static char[] prepareForHex(char[] hexStringChars) {
+        if (hexStringChars.length% 2 ==0) {
+            return hexStringChars;
+        } 
+        char[] hexChars = new char[hexStringChars.length+1];
+        hexChars[0]='0';
+        System.arraycopy(hexStringChars, 0, hexChars, 1, hexStringChars.length);
+        return hexChars;
+    }
+    
+    public static String prepareForHex(String hexString) {
+        if (hexString.length()% 2 ==0) {
+            return hexString;
+        } 
+        return "0".concat(hexString);
     }
 }
