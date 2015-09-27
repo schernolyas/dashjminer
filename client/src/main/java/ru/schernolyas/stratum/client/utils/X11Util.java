@@ -18,8 +18,10 @@ import fr.cryptohash.SIMD512;
 import fr.cryptohash.Skein512;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.pool2.ObjectPool;
+import ru.schernolyas.stratum.client.cryptopool.CryptoHolder;
 import ru.schernolyas.stratum.client.cryptopool.CryptoPool;
 
 /**
@@ -49,63 +51,36 @@ public class X11Util {
      * @return
      * @throws Exception
      */
-    public static byte[] calculate(byte[] preparedX11BlockHeaderCandidate) throws Exception {
-         
-        ObjectPool<BLAKE512> blake512Pool = CryptoPool.getBlake512Pool();
-        BLAKE512 blake512 = blake512Pool.borrowObject();
-        byte[] hash = blake512.digest(preparedX11BlockHeaderCandidate);
-        blake512Pool.returnObject(blake512);
+    public static byte[] calculate(byte[] preparedX11BlockHeaderCandidate) {
 
-        ObjectPool<BMW512> bmw512Pool = CryptoPool.getBMW512Pool();
-        BMW512 bmv512 = bmw512Pool.borrowObject();
-        hash = bmv512.digest(hash);
-        bmw512Pool.returnObject(bmv512);
+        ObjectPool<CryptoHolder> cryptoHolderPool = CryptoPool.getCryptoHolderPool();
+        CryptoHolder holder = null;
+        byte[] hash = null;
+        try {
+            holder = cryptoHolderPool.borrowObject();
+            hash = holder.getBlake512().digest(preparedX11BlockHeaderCandidate);
+            hash = holder.getBmw512().digest(hash);
+            hash = holder.getGroestl512().digest(hash);
+            hash = holder.getSkein512().digest(hash);
+            hash = holder.getJh512().digest(hash);
+            hash = holder.getKeccak512().digest(hash);
+            hash = holder.getLuffa512().digest(hash);
+            hash = holder.getCubeHash512().digest(hash);
+            hash = holder.getShaVite512().digest(hash);
+            hash = holder.getSimd512().digest(hash);
+            hash = holder.getEcho512().digest(hash);
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error", e);
+        } finally {
+            if (holder != null) {
+                try {
+                    cryptoHolderPool.returnObject(holder);
+                } catch (Exception e) {
+                    LOG.log(Level.SEVERE, "Error", e);
+                }
+            }
+        }
 
-        ObjectPool<Groestl512> groestl512Pool = CryptoPool.getGroestl512Pool();
-        Groestl512 groestl512 = groestl512Pool.borrowObject();
-        hash = groestl512.digest(hash);
-        groestl512Pool.returnObject(groestl512);
-
-        ObjectPool<Skein512> skein512Pool = CryptoPool.getSkein512Pool();
-        Skein512 skein512 = skein512Pool.borrowObject();
-        hash = skein512.digest(hash);
-        skein512Pool.returnObject(skein512);
-
-        
-        ObjectPool<JH512> jh512Pool = CryptoPool.getJh512Pool();
-        JH512 jh512 = jh512Pool.borrowObject();
-        hash = jh512.digest(hash);
-        jh512Pool.returnObject(jh512);
-
-        ObjectPool<Keccak512> keccak512Pool = CryptoPool.getKeccak512Pool();
-        Keccak512 keccak512 = keccak512Pool.borrowObject();
-        hash = keccak512.digest(hash);
-        keccak512Pool.returnObject(keccak512);
-
-        ObjectPool<Luffa512> luffa512Pool = CryptoPool.getLuffa512Pool();
-        Luffa512 luffa512 = luffa512Pool.borrowObject();
-        hash = luffa512.digest(hash);
-        luffa512Pool.returnObject(luffa512);
-
-        ObjectPool<CubeHash512> cubeHash512Pool = CryptoPool.getCubeHash512Pool();
-        CubeHash512 cubeHash512 = cubeHash512Pool.borrowObject();
-        hash = cubeHash512.digest(hash);
-        cubeHash512Pool.returnObject(cubeHash512);
-
-        ObjectPool<SHAvite512> shavite512Pool = CryptoPool.getSHAvite512Pool();
-        SHAvite512 shavite512 = shavite512Pool.borrowObject();
-        hash = shavite512.digest(hash);
-        shavite512Pool.returnObject(shavite512);
-
-        ObjectPool<SIMD512> simd512Pool = CryptoPool.getSimd512Pool();
-        SIMD512 simd512 = simd512Pool.borrowObject();
-        hash = simd512.digest(hash);
-        simd512Pool.returnObject(simd512);
-
-        ObjectPool<ECHO512> echo512Pool = CryptoPool.getEcho512Pool();
-        ECHO512 echo512 = echo512Pool.borrowObject();
-        hash = echo512.digest(hash);
-        echo512Pool.returnObject(echo512);
-        return Arrays.copyOfRange(hash,31, 63) ;
+        return hash!=null ? Arrays.copyOfRange(hash, 31, 63) : null;
     }
 }

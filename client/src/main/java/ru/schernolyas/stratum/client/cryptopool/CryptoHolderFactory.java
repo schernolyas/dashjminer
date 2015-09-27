@@ -6,7 +6,6 @@
 package ru.schernolyas.stratum.client.cryptopool;
 
 import fr.cryptohash.BMW512;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -14,18 +13,18 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  *
- * @author schernolyas
+ * @author Сергей
  */
-class BMW512Factory extends BasePooledObjectFactory<BMW512> {
-    private static final Logger LOG = Logger.getLogger(BMW512Factory.class.getName());
+public class CryptoHolderFactory extends BasePooledObjectFactory<CryptoHolder> {
+    private static final Logger LOG = Logger.getLogger(CryptoHolderFactory.class.getName());
     
     @Override
-    public BMW512 create() throws Exception {  
-        return new BMW512();
+    public CryptoHolder create() throws Exception {  
+        return new CryptoHolder();
     }
 
     @Override
-    public PooledObject<BMW512> wrap(BMW512 t) {
+    public PooledObject<CryptoHolder> wrap(CryptoHolder t) {
          return new DefaultPooledObject<>(t);
     }
     
