@@ -66,7 +66,7 @@ public class NewMain {
             LOG.log(Level.INFO, "current difficulty : 1) byte: {0}; 2) decimal: {1}",
                     new Object[]{Hex.encodeHexString(setDifficulty.getByteDifficulty()), setDifficulty.getDecimalDifficulty()});
 
-            byte[] currentTarget = DifficultyUtil.calculateTarget(setDifficulty);
+            byte[] currentTarget = DifficultyUtil.calculateTargetByDifficulty(setDifficulty.getDecimalDifficulty());
             LOG.log(Level.INFO, "currentTarget : {0}", new Object[]{Hex.encodeHexString(currentTarget)});
             long testNonceValue = 5628506L;
             //NonceTimeUtil nonceUtil = new NonceTimeHolderImpl(miningNotify.getCurrentTime(), testNonceValue);

@@ -43,39 +43,13 @@ public class DifficultyUtilTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of calculateTarget method, of class DifficultyUtil.
-     */
     @Test
-    public void testCalculateTarget_BigDecimal() throws Exception {
+    public void testCalculateTargetByDifficulty() throws Exception {
         System.out.println("calculateTarget");
         BigDecimal decimalDifficulty = new BigDecimal("0.03125");
-
-        byte[] result = DifficultyUtil.calculateTarget(decimalDifficulty);
-        //assertArrayEquals(expResult, result);
-        System.out.println(Hex.encodeHexString(result));
-
-        decimalDifficulty = new BigDecimal("0.12");
-        String h = Float.toHexString(decimalDifficulty.floatValue());
-        Pattern p = Pattern.compile("0x1\\.(.*)p(.*)");
-        Matcher matcher = p.matcher(h);
-        if (matcher.find()) {
-            System.out.println("group1: " + matcher.group(1) + ";" + matcher.group(2));
-        }
-        System.out.println("!" + Float.toHexString(decimalDifficulty.floatValue()));
-        result = DifficultyUtil.calculateTarget(decimalDifficulty);
-        //assertArrayEquals(expResult, result);
-        System.out.println(Hex.encodeHexString(result));
-        
-        //calculate https://bitcoin.org/en/developer-reference#target-nbits
-        String stratumNBits = "1b18679a";
-        String mantissa = "18679a";
-        int mantissaByteCount = 3;
-        int exponent = 0x1b;
-        BigInteger target = new BigInteger(mantissa,16).multiply(new BigInteger("256",10).pow(exponent-mantissaByteCount));
-        System.out.println("target: "+target.toString(16));
-        
-        
+        byte[] expectedTarget = Hex.decodeHex(("0000000000000000000000000000000000000000000000000000e0ff1f000000").toCharArray());
+        byte[] result = DifficultyUtil.calculateTargetByDifficulty(decimalDifficulty);
+        assertArrayEquals(expectedTarget, result);
     }
 
 }

@@ -73,7 +73,7 @@ public class MiningManager extends Thread {
 
                 blockHeaderTemplateProducer = new BlockHeaderTemplateProducer(lastMiningNotify, initial);
                 byte[] blockHeaderTemplate = blockHeaderTemplateProducer.produceBlockHeaderTemplate();
-                byte[] currentTarget =ByteUtils.extend(DifficultyUtil.calculateTarget(lastMiningNotify.getEncodedNetworkDifficulty()),32);
+                byte[] currentTarget =null;
                 LOG.log(Level.INFO, "currentTarget: {0}", new Object[]{Hex.encodeHexString(currentTarget)});
 
                 startMining(blockHeaderTemplate, currentTarget, nonceUtil);

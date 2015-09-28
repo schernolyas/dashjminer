@@ -12,6 +12,7 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ForkJoinPool;
@@ -92,9 +93,9 @@ public class MiningWorkerVerticle extends AbstractVerticle {
                 MiningNotify notify = MiningNotify.build(message.body());
                 BigInteger jobId = ByteUtils.toBigInteger(notify.getJobId());
                 Initial initial = Initial.build(GlobalObjects.getInitialJsonString());
-                //SetDifficulty setDifficulty = SetDifficulty.build(GlobalObjects.getSetDifficultyJsonString());
                 NonceTimeHolder nonceHolder = new NonceTimeHolderImpl();
-                byte[] currentTarget = DifficultyUtil.calculateTarget(notify.getEncodedNetworkDifficulty());
+                SetDifficulty setDifficulty = SetDifficulty.build(GlobalObjects.getSetDifficultyJsonString());
+                byte[] currentTarget = DifficultyUtil.calculateTargetByDifficulty(setDifficulty.getDecimalDifficulty());
                 boolean cleanJobs = notify.isCleanJobs();
                 if (cleanJobs) {
                     LOG.log(Level.SEVERE, "---CLEAN JOBS-----");
